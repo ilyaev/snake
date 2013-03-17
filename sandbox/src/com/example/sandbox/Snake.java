@@ -38,6 +38,8 @@ public class Snake {
 	int snakeX = 0;
 	int snakeY = 0;
 	
+	SnakeBody body;
+	
 	int timePerStep = 1000;
 	
 	int state = NOT_INITED;
@@ -82,7 +84,8 @@ public class Snake {
 	}
 
 	private void drawHead() {
-		canvas.drawCircle(getCellCenterX(snakeX), getCellCenterY(snakeY), cellSizePx / 2 , orangePaint);
+		body.draw(canvas);
+		//canvas.drawCircle(getCellCenterX(snakeX), getCellCenterY(snakeY), cellSizePx / 2 , orangePaint);
 	}
 
 	@SuppressWarnings("unused")
@@ -122,15 +125,17 @@ public class Snake {
 		
 		if (timeDiff >= defaultSpeed) {
 			
-			if (currentCmd == CMD_LEFT) {
-				snakeX -= 1;
-			} else if (currentCmd == CMD_RIGHT) {
-				snakeX += 1;
-			} else if (currentCmd == CMD_UP) {
-				snakeY -= 1;
-			} else if (currentCmd == CMD_DOWN) {
-				snakeY += 1;
-			}
+			body.calculate();
+			
+//			if (currentCmd == CMD_LEFT) {
+//				snakeX -= 1;
+//			} else if (currentCmd == CMD_RIGHT) {
+//				snakeX += 1;
+//			} else if (currentCmd == CMD_UP) {
+//				snakeY -= 1;
+//			} else if (currentCmd == CMD_DOWN) {
+//				snakeY += 1;
+//			}
 			
 			lastTimeStamp += timeDiff;
 			
@@ -200,6 +205,8 @@ public class Snake {
 		btnDown = new Rect(btnWidth, sHeight - (int) (cpHeight / 2), btnWidth + btnWidth, sHeight - 1);
 		
 		bugs.spawnBug(RACE_PLAYER);
+		
+		body = new SnakeBody(this);
 	}
 	
 	public float getCellCenterX(int x) {
@@ -223,8 +230,7 @@ public class Snake {
 	}
 
 	public void growTail() {
-		// TODO Auto-generated method stub
-		
+		body.grow();
 	}
 	
 }
