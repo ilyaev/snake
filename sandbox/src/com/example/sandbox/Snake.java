@@ -17,6 +17,10 @@ public class Snake {
 	final static int CMD_UP = 3;
 	final static int CMD_DOWN = 4;
 	
+	final static int RACE_PLAYER = 0;
+	final static int RACE_ENEMY1 = 1;
+	final static int RACE_ENEMY2 = 2;
+	
 	int currentCmd = 0;
 	int defaultSpeed = 200;
 	
@@ -49,9 +53,11 @@ public class Snake {
 	Rect btnDown;
 	
 	long lastTimeStamp = 0;
+	
+	SnakeBugList bugs = null;
 
 	public Snake() {
-		
+		bugs = new SnakeBugList(this);
 	}
 
 	public void draw(Canvas tCanvas) {
@@ -64,6 +70,7 @@ public class Snake {
 		
 		drawControlPanel();
 		drawHead();
+		bugs.draw(canvas);
 	}
 	
 	private void drawControlPanel() {		
@@ -114,6 +121,7 @@ public class Snake {
 		}
 		
 		if (timeDiff >= defaultSpeed) {
+			
 			if (currentCmd == CMD_LEFT) {
 				snakeX -= 1;
 			} else if (currentCmd == CMD_RIGHT) {
@@ -123,7 +131,10 @@ public class Snake {
 			} else if (currentCmd == CMD_DOWN) {
 				snakeY += 1;
 			}
+			
 			lastTimeStamp += timeDiff;
+			
+			bugs.processIntercection();
 		}
 		
 		//Log.v("Snake", Integer.toString(currentCmd)+ " ; diff = " + Long.toString(timeDiff) + " ; curr = " + Long.toString(System.currentTimeMillis()) + " ; last = " + Long.toString(lastTimeStamp));
@@ -187,13 +198,15 @@ public class Snake {
 		
 		btnUp = new Rect(btnWidth, sHeight - cpHeight, btnWidth + btnWidth, (int) (sHeight - cpHeight / 2));
 		btnDown = new Rect(btnWidth, sHeight - (int) (cpHeight / 2), btnWidth + btnWidth, sHeight - 1);
+		
+		bugs.spawnBug(RACE_PLAYER);
 	}
 	
-	private float getCellCenterX(int x) {
+	public float getCellCenterX(int x) {
 		return (x - 1) * cellSizePx + (cellSizePx / 2);
 	}
 	
-	private float getCellCenterY(int y) {
+	public float getCellCenterY(int y) {
 		return (y - 1) * cellSizePx + (cellSizePx / 2);
 	}
 	
@@ -207,6 +220,11 @@ public class Snake {
 		} else if (btnDown.contains((int)event.getX(), (int)event.getY())) {
 			setCommand(CMD_DOWN);
 		}
+	}
+
+	public void growTail() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
