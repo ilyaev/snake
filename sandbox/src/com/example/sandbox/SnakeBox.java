@@ -38,7 +38,7 @@ public class SnakeBox extends Activity implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		aSurfaceView.snake.processTouch(event);
+		aSurfaceView.board.processTouch(event);
 		return true;
 	}	
 	

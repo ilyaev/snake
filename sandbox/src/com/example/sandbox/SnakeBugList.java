@@ -12,21 +12,21 @@ import android.graphics.Paint;
 public class SnakeBugList {
 	
 	List<SnakeBug> bugs;
-	Snake snake;
+	SnakeBoard board;
 	
 	Paint redPaint;
 	
-	public SnakeBugList(Snake eSnake) {
+	public SnakeBugList(SnakeBoard eSnake) {
 		bugs = new ArrayList<SnakeBug>();
-		snake = eSnake;
+		board = eSnake;
 		redPaint = new Paint();
 		redPaint.setColor(Color.RED);
 	}
 	
 	public void spawnBug(int race) {
 		Random r = new Random();
-		int bX = r.nextInt(snake.cnHorizontal - 1) + 1;
-		int bY = r.nextInt(snake.cnVertical - 1) + 1;
+		int bX = r.nextInt(board.cnHorizontal - 1) + 1;
+		int bY = r.nextInt(board.cnVertical - 1) + 1;
 		
 		SnakeBug bug = new SnakeBug(bX, bY);
 		bug.setRace(race);
@@ -39,7 +39,7 @@ public class SnakeBugList {
 		
 		while(iterator.hasNext()) {
 			SnakeBug bug = iterator.next();
-			canvas.drawCircle(snake.getCellCenterX(bug.cellX), snake.getCellCenterY(bug.cellY), snake.cellSizePx / 2, redPaint);
+			canvas.drawCircle(board.getCellCenterX(bug.cellX), board.getCellCenterY(bug.cellY), board.cellSizePx / 2, redPaint);
 		}
 	}
 
@@ -48,10 +48,12 @@ public class SnakeBugList {
 		
 		while(iterator.hasNext()) {
 			SnakeBug bug = iterator.next();
-			if (bug.cellX == snake.snakeX && bug.cellY == snake.snakeY) {
-				spawnBug(bug.race);
-				bugs.remove(bug);
-				snake.growTail();
+			for(int i = 0 ; i < board.snakes.size() ; i++) {
+				if (bug.cellX == board.snakes.get(i).snakeX && bug.cellY == board.snakes.get(i).snakeY) {
+					spawnBug(bug.race);
+					bugs.remove(bug);
+					board.snakes.get(i).body.grow();
+				}
 			}
 		}
 		

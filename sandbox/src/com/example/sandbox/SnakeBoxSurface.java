@@ -10,7 +10,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	SurfaceHolder sHolder;
 	Thread sThread = null;
 	boolean isRunning = false;
-	Snake snake = null;
+	SnakeBoard board = null;
 	
 	int sWidth = 0;
 	int sHeight = 0;
@@ -20,7 +20,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	public SnakeBoxSurface(Context context) {
 		super(context);
 		sHolder = getHolder();
-		snake = new Snake();
+		board = new SnakeBoard();
 	}
 
 	@SuppressWarnings("static-access")
@@ -44,12 +44,12 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 				}
 				
 				// calculate
-				snake.calculate(canvas);
+				board.calculate(canvas);
 				
 				
 				//draw
 				synchronized (sHolder) {
-					snake.draw(canvas);
+					board.draw(canvas);
 				}		
 				
 				//sleep
