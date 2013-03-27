@@ -36,7 +36,8 @@ public class SnakeBody {
 		Iterator<SnakePiece> iterator = items.iterator();
 		while (iterator.hasNext()) {
 			SnakePiece piece = iterator.next();
-			canvas.drawCircle(board.getCellCenterX(piece.cellX), board.getCellCenterY(piece.cellY), board.cellSizePx / 2, board.greenPaint);			
+//			canvas.drawCircle(board.getCellCenterX(piece.cellX), board.getCellCenterY(piece.cellY), board.cellSizePx / 2, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint)) ;
+			canvas.drawRect(board.getCellCenterX(piece.cellX) - board.cellSizePx / 2 + 1, board.getCellCenterY(piece.cellY) - board.cellSizePx / 2 + 1, board.getCellCenterX(piece.cellX) + board.cellSizePx / 2 - 1, board.getCellCenterY(piece.cellY) + board.cellSizePx / 2 - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
 		}
 	}
 	

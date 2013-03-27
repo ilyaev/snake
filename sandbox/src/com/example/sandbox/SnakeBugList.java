@@ -28,10 +28,14 @@ public class SnakeBugList {
 		int bX = r.nextInt(board.cnHorizontal - 1) + 1;
 		int bY = r.nextInt(board.cnVertical - 1) + 1;
 		
-		SnakeBug bug = new SnakeBug(bX, bY);
-		bug.setRace(race);
-		
-		bugs.add(bug);		
+		if (board.oMap[bX][bY]) {
+			spawnBug(race);
+		} else {		
+			SnakeBug bug = new SnakeBug(bX, bY);
+			bug.setRace(race);
+			
+			bugs.add(bug);
+		}
 	}
 	
 	public void draw(Canvas canvas) {
@@ -53,6 +57,7 @@ public class SnakeBugList {
 					spawnBug(bug.race);
 					bugs.remove(bug);
 					board.snakes.get(i).body.grow();
+					board.snakes.get(1).path.clear();
 				}
 			}
 		}

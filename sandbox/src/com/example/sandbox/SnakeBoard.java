@@ -13,7 +13,7 @@ public class SnakeBoard {
 	int sWidth;
 	int sHeight;
 	
-	final static int MIN_CELLS_NUMBER = 15;
+	final static int MIN_CELLS_NUMBER = 20;
 	
 	int defaultSpeed = 200;
 	
@@ -35,6 +35,7 @@ public class SnakeBoard {
 	Paint whiteFramePaint;
 	Paint orangePaint;
 	Paint greenPaint;
+	Paint darkGreenPaint;
 	
 	Rect btnLeft;
 	Rect btnRight;
@@ -45,6 +46,8 @@ public class SnakeBoard {
 	
 	SnakeBugList bugs = null;
 	List<Snake> snakes;
+	
+	boolean oMap[][];
 
 	public SnakeBoard() {
 		bugs = new SnakeBugList(this);
@@ -55,7 +58,7 @@ public class SnakeBoard {
 		canvas = tCanvas;		
 		canvas.drawRGB(0, 0, 0);
 		
-		drawHelpers();
+		//drawHelpers();
 		drawControlPanel();
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
@@ -87,6 +90,7 @@ public class SnakeBoard {
 		canvas.drawText("CellsX: " + Integer.toString(cnHorizontal) + " ; CellsY: " + Integer.toString(cnVertical), leftX, topY, grayPaint);
 	}
 	
+	@SuppressWarnings("unused")
 	private void drawHelpers() {
 		for(int x = 0 ; x < cnHorizontal + 1 ; x++) {
 			canvas.drawLine(x * cellSizePx, 0 , x * cellSizePx, sHeight, grayPaint);
@@ -111,6 +115,8 @@ public class SnakeBoard {
 			for(int i = 0 ; i < snakes.size() ; i++) {
 				snakes.get(i).calculate();
 			}
+			
+			rebuildObstMap();
 			
 			lastTimeStamp += timeDiff;
 			
@@ -145,6 +151,9 @@ public class SnakeBoard {
 		greenPaint = new Paint();
 		greenPaint.setARGB(255, 0, 255, 0);
 		
+		darkGreenPaint = new Paint();
+		darkGreenPaint.setARGB(255, 0, 125, 0);
+		
 		state = INITED;
 		
 		lastTimeStamp = 0;		
@@ -158,6 +167,9 @@ public class SnakeBoard {
 		btnUp = new Rect(btnWidth, sHeight - cpHeight, btnWidth + btnWidth, (int) (sHeight - cpHeight / 2));
 		btnDown = new Rect(btnWidth, sHeight - (int) (cpHeight / 2), btnWidth + btnWidth, sHeight - 1);
 		
+		
+		oMap = new boolean[cnHorizontal + 1][cnVertical + 1];
+		
 		bugs.spawnBug(Snake.RACE_PLAYER);
 		
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
@@ -166,8 +178,23 @@ public class SnakeBoard {
 		foeSnake.race = Snake.RACE_ENEMY1;
 		
 		snakes.add(foeSnake);
+		
+		rebuildObstMap();		
 	}
 	
+	private void rebuildObstMap() {
+		for(int x = 1 ; x <= cnHorizontal ; x++) {
+			for(int y = 1 ; y <= cnVertical ; y++) {
+				oMap[x][y] = false;
+			}
+		}
+		
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			for (int j = 0 ; j < snakes.get(i).body.items.size() ; j++) {
+				oMap[snakes.get(i).body.items.get(j).cellX][snakes.get(i).body.items.get(j).cellY] = true;			}
+		}
+	}
+
 	public float getCellCenterX(int x) {
 		return (x - 1) * cellSizePx + (cellSizePx / 2);
 	}
