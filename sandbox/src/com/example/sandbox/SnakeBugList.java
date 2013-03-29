@@ -32,8 +32,7 @@ public class SnakeBugList {
 			spawnBug(race);
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
-			bug.setRace(race);
-			
+			bug.setRace(race);			
 			bugs.add(bug);
 		}
 	}
@@ -53,11 +52,12 @@ public class SnakeBugList {
 		while(iterator.hasNext()) {
 			SnakeBug bug = iterator.next();
 			for(int i = 0 ; i < board.snakes.size() ; i++) {
-				if (bug.cellX == board.snakes.get(i).snakeX && bug.cellY == board.snakes.get(i).snakeY) {
+				if (bug.cellX == board.snakes.get(i).snakeX && bug.cellY == board.snakes.get(i).snakeY && bug.active == 1) {
 					spawnBug(bug.race);
+					bug.active = 0;
 					bugs.remove(bug);
 					board.snakes.get(i).body.grow();
-					board.snakes.get(1).path.clear();
+					board.snakes.get(i).path.clear();
 				}
 			}
 		}

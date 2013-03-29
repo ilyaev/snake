@@ -6,6 +6,7 @@ public class SnakeBug {
 	int cellY;
 	
 	int race;
+	int active = 1;
 	
 	public SnakeBug(int cX, int cY) {
 		cellX = cX;

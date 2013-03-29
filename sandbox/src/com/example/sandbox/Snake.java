@@ -197,8 +197,7 @@ public class Snake {
 			}
 		} else {
 			body.calculateByCommand();
-		}
-		
+		}		
 	}
 
 	public void draw() {

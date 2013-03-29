@@ -123,6 +123,10 @@ public class SnakeBoard {
 			bugs.processIntercection();
 		}
 		
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			snakes.get(i).body.calculate();
+		}
+		
 	}
 
 	private void initialize() {
@@ -191,7 +195,8 @@ public class SnakeBoard {
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			for (int j = 0 ; j < snakes.get(i).body.items.size() ; j++) {
-				oMap[snakes.get(i).body.items.get(j).cellX][snakes.get(i).body.items.get(j).cellY] = true;			}
+				oMap[snakes.get(i).body.items.get(j).cellX][snakes.get(i).body.items.get(j).cellY] = true;			
+			}
 		}
 	}
 

@@ -18,7 +18,7 @@ public class SnakeBody {
 		snake = tSnake;
 		
 		items = new ArrayList<SnakePiece>();
-		SnakePiece head = new SnakePiece(snake.snakeX, snake.snakeY);
+		SnakePiece head = new SnakePiece(snake.snakeX, snake.snakeY, board);
 		head.pType = SnakePiece.TYPE_HEAD;
 		head.delay = 0;
 		items.add(head);
@@ -26,7 +26,7 @@ public class SnakeBody {
 	
 	public void grow() {
 		SnakePiece lastPart = items.get(lastIndex);
-		SnakePiece part = new SnakePiece(lastPart.cellX, lastPart.cellY);
+		SnakePiece part = new SnakePiece(lastPart.cellX, lastPart.cellY, board);
 		
 		items.add(part);
 		lastIndex += 1;
@@ -34,10 +34,22 @@ public class SnakeBody {
 	
 	public void draw(Canvas canvas) {
 		Iterator<SnakePiece> iterator = items.iterator();
+		
+		float halfSize = board.cellSizePx / 2; 
+		
 		while (iterator.hasNext()) {
 			SnakePiece piece = iterator.next();
-//			canvas.drawCircle(board.getCellCenterX(piece.cellX), board.getCellCenterY(piece.cellY), board.cellSizePx / 2, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint)) ;
-			canvas.drawRect(board.getCellCenterX(piece.cellX) - board.cellSizePx / 2 + 1, board.getCellCenterY(piece.cellY) - board.cellSizePx / 2 + 1, board.getCellCenterX(piece.cellX) + board.cellSizePx / 2 - 1, board.getCellCenterY(piece.cellY) + board.cellSizePx / 2 - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
+			canvas.drawRect(piece.x - halfSize + 1, piece.y - halfSize + 1, piece.x + halfSize - 1, piece.y + halfSize - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
+			//canvas.drawCircle(piece.x, piece.y, halfSize - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
+		}
+	}
+	
+	public void calculate() {
+		Iterator<SnakePiece> iterator = items.iterator();
+		
+		while(iterator.hasNext()) {
+			SnakePiece piece = iterator.next();
+			piece.calculate();
 		}
 	}
 	
@@ -54,7 +66,8 @@ public class SnakeBody {
 				
 				if (items.get(i).delay == 0) {
 					items.get(i).cellX = lastX;
-					items.get(i).cellY = lastY;									
+					items.get(i).cellY = lastY;		
+					items.get(i).setTarget(lastX,  lastY);
 				} else {
 					items.get(i).delay -= 1;
 				}
@@ -89,6 +102,8 @@ public class SnakeBody {
 		
 		items.get(0).cellX = snake.snakeX;
 		items.get(0).cellY = snake.snakeY;
+		
+		items.get(0).setTarget(snake.snakeX, snake.snakeY);
 		
 	}
 	
