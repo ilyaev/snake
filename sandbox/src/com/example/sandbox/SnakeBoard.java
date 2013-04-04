@@ -175,6 +175,9 @@ public class SnakeBoard {
 		oMap = new boolean[cnHorizontal + 1][cnVertical + 1];
 		
 		bugs.spawnBug(Snake.RACE_PLAYER);
+		bugs.spawnBug(Snake.RACE_ENEMY1);
+		bugs.spawnBug(Snake.RACE_ENEMY2);
+		bugs.spawnBug(Snake.RACE_ENEMY3);
 		
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
 		
@@ -182,6 +185,16 @@ public class SnakeBoard {
 		foeSnake.race = Snake.RACE_ENEMY1;
 		
 		snakes.add(foeSnake);
+		
+		Snake foeSnake2 = new Snake(15,15, this);
+		foeSnake2.race = Snake.RACE_ENEMY2;
+		
+		snakes.add(foeSnake2);
+		
+		Snake foeSnake3 = new Snake(5,5, this);
+		foeSnake3.race = Snake.RACE_ENEMY3;
+		
+		snakes.add(foeSnake3);
 		
 		rebuildObstMap();		
 	}
@@ -218,6 +231,15 @@ public class SnakeBoard {
 		} else if (btnDown.contains((int)event.getX(), (int)event.getY())) {
 			snakes.get(0).setCommand(Snake.CMD_DOWN);
 		}
+	}
+
+	public Snake getSnakeByRace(int race) {
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			if (snakes.get(i).race == race) {
+				return snakes.get(i);
+			}
+		}
+		return null;
 	}
 	
 }

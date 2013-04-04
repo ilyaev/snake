@@ -5,6 +5,8 @@ public class SnakeBug {
 	int cellX;
 	int cellY;
 	
+	int eatenBy = 0;
+	
 	int race;
 	int active = 1;
 	

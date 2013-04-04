@@ -19,6 +19,7 @@ public class SnakePiece {
 	
 	SnakeBoard board;
 	
+	int active = 1;
 	
 	int pType = TYPE_BODY;
 	int delay = 1;

@@ -39,7 +39,9 @@ public class SnakeBody {
 		
 		while (iterator.hasNext()) {
 			SnakePiece piece = iterator.next();
-			canvas.drawRect(piece.x - halfSize + 1, piece.y - halfSize + 1, piece.x + halfSize - 1, piece.y + halfSize - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
+			if (piece.active == 1) {
+				canvas.drawRect(piece.x - halfSize + 1, piece.y - halfSize + 1, piece.x + halfSize - 1, piece.y + halfSize - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
+			}
 			//canvas.drawCircle(piece.x, piece.y, halfSize - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
 		}
 	}
@@ -105,6 +107,15 @@ public class SnakeBody {
 		
 		items.get(0).setTarget(snake.snakeX, snake.snakeY);
 		
+	}
+
+	public void shrink() {
+		//SnakePiece piece = items.get(items.size() - 1);
+		if (items.size() > 1) {
+			items.get(items.size()  -  1).active = 0;
+			items.remove(items.size() - 1);
+			lastIndex -= 1;
+		}
 	}
 	
 	

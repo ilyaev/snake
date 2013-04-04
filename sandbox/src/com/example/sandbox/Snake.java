@@ -13,6 +13,7 @@ public class Snake {
 	final static int RACE_PLAYER = 0;
 	final static int RACE_ENEMY1 = 1;
 	final static int RACE_ENEMY2 = 2;
+	final static int RACE_ENEMY3 = 3;
 	
 	List<Node> path;
 	
@@ -47,8 +48,14 @@ public class Snake {
 			}
 		}
 		
-		int bugX = board.bugs.bugs.get(0).cellX;
-		int bugY = board.bugs.bugs.get(0).cellY;
+		SnakeBug targetBug = board.bugs.getBugByRace(race);
+		
+		if (targetBug == null) {
+			return false;
+		}
+		
+		int bugX = targetBug.cellX;
+		int bugY = targetBug.cellY;
 		
 		List<Node> closed = new ArrayList<Node>();
 		SortedNodeList open = new SortedNodeList();
