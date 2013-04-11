@@ -32,6 +32,12 @@ public class SnakeBody {
 		lastIndex += 1;
 	}
 	
+	public void addTail(int cX, int cY) {
+		SnakePiece part = new SnakePiece(cX, cY, board);
+		items.add(part);
+		lastIndex += 1;
+	}
+	
 	public void draw(Canvas canvas) {
 		Iterator<SnakePiece> iterator = items.iterator();
 		

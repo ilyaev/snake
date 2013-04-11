@@ -12,6 +12,9 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	boolean isRunning = false;
 	SnakeBoard board = null;
 	
+	SnakeBoard gameBoard = null;
+	SnakeBoard startBoard = null;
+	
 	int sWidth = 0;
 	int sHeight = 0;
 	
@@ -22,7 +25,13 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	public SnakeBoxSurface(Context context) {
 		super(context);
 		sHolder = getHolder();
-		board = new SnakeBoard();
+		gameBoard = new GameSnakeBoard(this);
+		startBoard = new StartSnakeBoard(this);
+		setBoard(startBoard);
+	}
+	
+	public void setBoard(SnakeBoard nextBoard) {
+		board = nextBoard;
 	}
 
 	@SuppressWarnings("static-access")

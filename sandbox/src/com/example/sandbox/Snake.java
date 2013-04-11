@@ -26,6 +26,7 @@ public class Snake {
 	SnakeBoard board;
 	
 	int currentCmd = 0;
+	int live = 0;
 	
 	public Snake(int sX, int sY, SnakeBoard sBoard) {
 		snakeX = sX;
