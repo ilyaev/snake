@@ -18,6 +18,8 @@ public class StartSnakeBoard extends SnakeBoard {
 	int showSpeed = 2000;
 	
 	final static int ACTION_SOLO = 1;
+	final static int ACTION_BATTLE = 2;
+	final static int ACTION_SURVIVAL = 3;
 	
 	long lastShowTimeStamp = 0;
 
@@ -272,6 +274,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		btn = new Button("Battle");
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
+		btn.setAction(StartSnakeBoard.ACTION_BATTLE);	
 		buttons.add(btn);
 		
 		shiftY += bHeight + 20;
@@ -279,6 +282,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		btn = new Button("Survival");
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
+		btn.setAction(StartSnakeBoard.ACTION_SURVIVAL);	
 		buttons.add(btn);		
 	}
 	
@@ -293,6 +297,11 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		switch (action) {
 			case StartSnakeBoard.ACTION_SOLO:
+				surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SOLO;
+				surface.setBoard(surface.gameBoard);
+				break;
+			case StartSnakeBoard.ACTION_BATTLE:
+				surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_BATTLE;
 				surface.setBoard(surface.gameBoard);
 				break;
 			default:

@@ -7,6 +7,12 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 
 public class SnakeBoard {
+	
+	final static int GAMEMODE_SOLO = 1;
+	final static int GAMEMODE_BATTLE = 2;
+	final static int GAMEMODE_SURVIVAL = 3;
+
+	int gameMode = 1;
 
 	public int sWidth;
 	public int sHeight;

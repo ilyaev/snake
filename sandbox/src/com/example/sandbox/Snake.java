@@ -28,6 +28,8 @@ public class Snake {
 	int currentCmd = 0;
 	int live = 0;
 	
+	int pathRecalculated = 0;
+	
 	public Snake(int sX, int sY, SnakeBoard sBoard) {
 		snakeX = sX;
 		snakeY = sY;
@@ -39,6 +41,7 @@ public class Snake {
 	}
 	
 	public boolean calculatePath() {
+		pathRecalculated = 1;
 		path.clear();
 		// create map
 		Node[][] map = new Node[board.cnHorizontal+1][board.cnVertical+1];
@@ -71,6 +74,7 @@ public class Snake {
 		
 		while(open.size() != 0) {
 			Node current = open.first();
+
 			if (current == map[bugX][bugY]) {
 				break;
 			}
@@ -100,7 +104,7 @@ public class Snake {
 					
 					if (flag && !board.oMap[xp][yp]) { //@Todo: is valid location
 						
-						float nextStepCost = current.cost + 10;
+						float nextStepCost = current.cost;
 						Node neighbour = map[xp][yp];
 						
 						if (nextStepCost < neighbour.cost) {
@@ -115,7 +119,7 @@ public class Snake {
 						
 						if (!open.contains(neighbour) && !closed.contains(neighbour)) {
 							neighbour.cost = nextStepCost;
-							neighbour.heuristic = getDistance(snakeX, snakeY, bugX, bugY) * 10;
+							neighbour.heuristic = getDistance(xp, yp, bugX, bugY) ;
 							neighbour.parent = current;
 							open.add(neighbour);
 						}
@@ -154,6 +158,8 @@ public class Snake {
 	private float getDistance(int x1, int y1, int x2, int y2) {
 		int dx = Math.abs(x2 - x1);
 		int dy = Math.abs(y2 - y1);
+		
+		//return (float) Math.sqrt((double)(Math.pow(x2-x1, 2) + Math.pow(y2 - y1, 2)));
 		
 		return (float)(dx + dy);
 	}

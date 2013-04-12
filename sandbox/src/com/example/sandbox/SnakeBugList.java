@@ -31,7 +31,7 @@ public class SnakeBugList {
 		Random r = new Random();
 		int bX = r.nextInt(board.cnHorizontal - 1) + 1;
 		int bY = r.nextInt(board.cnVertical - 1) + 1;
-		
+
 		if (board.oMap[bX][bY]) {
 			spawnBug(race);
 		} else {		

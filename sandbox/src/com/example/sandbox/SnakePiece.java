@@ -1,5 +1,8 @@
 package com.example.sandbox;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
 public class SnakePiece {
 	
 	final static int TYPE_HEAD = 0;
@@ -49,8 +52,14 @@ public class SnakePiece {
 		if (iteration < maxIterations) {
 			x += dX;
 			y += dY;
-		}
-		iteration += 1;		
+			iteration += 1;
+		}				
+	}
+
+	public void draw(Canvas canvas, Paint paint, float halfSize) {
+		if (active == 1) {
+			canvas.drawRect(x - halfSize + 1, y - halfSize + 1, x + halfSize - 1, y + halfSize - 1, paint);
+		}		
 	}	
 	
 	

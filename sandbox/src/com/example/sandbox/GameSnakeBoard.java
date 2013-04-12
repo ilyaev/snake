@@ -27,7 +27,6 @@ public class GameSnakeBoard extends SnakeBoard {
 		canvas = tCanvas;		
 		canvas.drawRGB(0, 0, 0);
 		
-		//drawHelpers();
 		drawControlPanel();
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
@@ -83,9 +82,8 @@ public class GameSnakeBoard extends SnakeBoard {
 			
 			for(int i = 0 ; i < snakes.size() ; i++) {
 				snakes.get(i).calculate();
-			}
-			
-			rebuildObstMap();
+				rebuildObstMap();
+			}			
 			
 			lastTimeStamp += timeDiff;
 			
@@ -144,6 +142,30 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		oMap = new boolean[cnHorizontal + 1][cnVertical + 1];
 		
+		
+		switch (gameMode) {
+			case GAMEMODE_SOLO:
+				startGameSolo();
+				break;
+			case GAMEMODE_BATTLE:
+				startGameBattle();
+				break;
+			case GAMEMODE_SURVIVAL:
+				break;
+			default:
+				break;
+				
+		}
+		
+		rebuildObstMap();	
+	}	
+	
+	private void startGameSolo() {
+		bugs.spawnBug(Snake.RACE_PLAYER);
+		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
+	}
+	
+	private void startGameBattle() {
 		bugs.spawnBug(Snake.RACE_PLAYER);
 		bugs.spawnBug(Snake.RACE_ENEMY1);
 		bugs.spawnBug(Snake.RACE_ENEMY2);
@@ -165,11 +187,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		foeSnake3.race = Snake.RACE_ENEMY3;
 		
 		snakes.add(foeSnake3);
-		
-		rebuildObstMap();	
-	}	
-	
-	
+	}
+
 	public void processTouch(MotionEvent event) {
 		if (btnLeft.contains((int)event.getX(), (int)event.getY())) {
 			snakes.get(0).setCommand(Snake.CMD_LEFT);
