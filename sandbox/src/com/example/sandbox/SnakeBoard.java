@@ -23,7 +23,7 @@ public class SnakeBoard {
 	
 	int defaultSpeed = 200;
 	
-	int cpHeight = 200;
+	int cpHeight = 190;
 	
 	int cnHorizontal = 20;
 	int cnVertical = 0;
@@ -33,6 +33,7 @@ public class SnakeBoard {
 	int state = NOT_INITED;
 	
 	Paint grayPaint;
+	
 	Paint whiteFramePaint;
 	Paint orangePaint;
 	Paint greenPaint;

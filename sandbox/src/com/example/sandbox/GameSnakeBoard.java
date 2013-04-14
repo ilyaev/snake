@@ -15,12 +15,23 @@ public class GameSnakeBoard extends SnakeBoard {
 	Rect btnLeft;
 	Rect btnRight;
 	Rect btnUp;
-	Rect btnDown;	
+	Rect btnDown;
+	
+	Paint textPaint;
+	
+	int score = 0;
+	int tailLength = 0;
+	int killsMade = 0;
+	
+	int spHeight = 30;
 
 	public GameSnakeBoard(SnakeBoxSurface tSurface) {
 		surface = tSurface;
 		bugs = new SnakeBugList(this);
 		snakes = new ArrayList<Snake>();
+		textPaint = new Paint();
+		textPaint.setARGB(255, 255, 255, 255);
+		textPaint.setTextSize(spHeight - 2);
 	}
 
 	public void draw(Canvas tCanvas) {
@@ -28,12 +39,19 @@ public class GameSnakeBoard extends SnakeBoard {
 		canvas.drawRGB(0, 0, 0);
 		
 		drawControlPanel();
+		drawScorePanel();
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			snakes.get(i).draw();
 		}
 		
 		bugs.draw(canvas);
+	}
+	
+	private void drawScorePanel() {
+		canvas.drawText("Score: " + Integer.toString((snakes.get(0).body.items.size() - 1) * 10), 0, spHeight, textPaint);
+		canvas.drawText("Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1), 150, spHeight, textPaint);
+		canvas.drawText("Kills: " + Integer.toString(tailLength), 270, spHeight, textPaint);
 	}
 	
 	private void drawControlPanel() {		
@@ -104,11 +122,11 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		if (sHeight > sWidth) {
 			cellSizePx = sWidth / cnHorizontal;
-			cnVertical = (int) ((sHeight - cpHeight) / cellSizePx);
+			cnVertical = (int) ((sHeight - cpHeight - spHeight) / cellSizePx);
 		} else {
 			cnVertical = MIN_CELLS_NUMBER;
 			cellSizePx = sHeight / cnVertical;
-			cnHorizontal = (int) ((sWidth - cpHeight) / cellSizePx);
+			cnHorizontal = (int) ((sWidth - cpHeight - spHeight) / cellSizePx);
 		}
 		
 		grayPaint = new Paint();
@@ -199,6 +217,14 @@ public class GameSnakeBoard extends SnakeBoard {
 		} else if (btnDown.contains((int)event.getX(), (int)event.getY())) {
 			snakes.get(0).setCommand(Snake.CMD_DOWN);
 		}
+	}
+	
+	public float getCellCenterX(int x) {
+		return (x - 1) * cellSizePx + (cellSizePx / 2);
+	}
+	
+	public float getCellCenterY(int y) {
+		return spHeight + (y - 1) * cellSizePx + (cellSizePx / 2);
 	}
 	
 }
