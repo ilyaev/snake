@@ -48,9 +48,17 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		bugs.draw(canvas);
 		
+		if (booms != null) {
+			for(int i = 0 ; i < booms.size() ; i++) {
+				booms.get(i).draw(tCanvas);
+			}
+		}
+		
 		for(int i = 0 ; i < buttons.size() ; i++) {
 			buttons.get(i).draw(canvas);
 		}
+		
+		
 	}
 	
 	public void calculate(Canvas tCanvas) {
@@ -94,6 +102,12 @@ public class StartSnakeBoard extends SnakeBoard {
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			if (snakes.get(i).live == 1) {
 				snakes.get(i).body.calculate();
+			}
+		}
+		
+		if (booms != null) {
+			for(int i = 0 ; i < booms.size() ; i++) {
+				booms.get(i).calculate();
 			}
 		}
 		
@@ -287,26 +301,30 @@ public class StartSnakeBoard extends SnakeBoard {
 	}
 	
 	public void processTouch(MotionEvent event) {
-		int action = -1;
-		
-		for(int i = 0 ; i < buttons.size() ; i++) {
-			if (buttons.get(i).rect.contains((int)event.getX(), (int)event.getY())) {
-				action = buttons.get(i).action;
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			int action = -1;
+			
+			for(int i = 0 ; i < buttons.size() ; i++) {
+				if (buttons.get(i).rect.contains((int)event.getX(), (int)event.getY())) {
+					action = buttons.get(i).action;
+				}
+			}
+			
+			switch (action) {
+				case StartSnakeBoard.ACTION_SOLO:
+					surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SOLO;
+					surface.gameBoard.state = SnakeBoard.NOT_INITED;
+					surface.setBoard(surface.gameBoard);
+					break;
+				case StartSnakeBoard.ACTION_BATTLE:
+					surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_BATTLE;
+					surface.gameBoard.state = SnakeBoard.NOT_INITED;
+					surface.setBoard(surface.gameBoard);
+					break;
+				default:
+					break;
 			}
 		}
-		
-		switch (action) {
-			case StartSnakeBoard.ACTION_SOLO:
-				surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SOLO;
-				surface.setBoard(surface.gameBoard);
-				break;
-			case StartSnakeBoard.ACTION_BATTLE:
-				surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_BATTLE;
-				surface.setBoard(surface.gameBoard);
-				break;
-			default:
-				break;
-		}		
 	}
 	
 }

@@ -19,36 +19,31 @@ public class Particle {
 		stepsXY = 0;
 		isActive = true;
 		paint = new Paint();
-		paint.setARGB(255, 226, 139, 0);
+		paint.setARGB(255, 255, 0, 0);
 	}
 	
 	public void setXYDestination(float nX, float nY, int speed) {
-		//stepsXY = steps;
+	
+		speedX = (nX - x) /  speed;
+		speedY = (nY - y) /  speed;
 		
-//		float steps = speed / (1000 / 60);
-		
-		speedX = (nX - x) /  60; //(1000 / 60);
-		speedY = (nY - y) /  60; //(1000 / 60);
-		
-		stepsXY = 60;
+		stepsXY = speed;
 	}
 	
 	public void calculate(int cWidth, int cHeight) {
 		if (isActive) {
 			if (stepsXY > 0) {
-				x = x + speedX;
-				y = y + speedY;
+				x = x + speedX * 2;
+				y = y + speedY * 2;
 				stepsXY -= 1;
 			} else {
-				//setXYDestination((float)Math.random() * 200, (float)Math.random() * 200, 30);
-				//setXYDestination((float)Math.random() * cWidth, (float)Math.random() * cHeight, 30);
-				setXYDestination((float)Math.random() * cWidth, (float)Math.random() * 200, 50);
+				isActive = false;
 			}
 		}
 	}
 	
 	public void draw(Canvas canvas) {
-		canvas.drawCircle(x, y, 5, paint);
+		canvas.drawCircle(x, y, 3, paint);
 	}
 	
 }

@@ -28,6 +28,8 @@ public class Snake {
 	int currentCmd = 0;
 	int live = 0;
 	
+	int active = 1;
+	
 	int pathRecalculated = 0;
 	
 	public Snake(int sX, int sY, SnakeBoard sBoard) {
@@ -55,7 +57,7 @@ public class Snake {
 		SnakeBug targetBug = board.bugs.getBugByRace(race);
 		
 		if (targetBug == null) {
-			return false;
+			return calculateBestFreeMove();
 		}
 		
 		int bugX = targetBug.cellX;
@@ -133,7 +135,7 @@ public class Snake {
 		Node target = map[bugX][bugY];
 		
 		if (target.parent == null) {
-			return false;
+			return calculateBestFreeMove();
 		}
 		
 			
@@ -165,53 +167,90 @@ public class Snake {
 	}
 
 	public void calculate() {
-		if (race != RACE_PLAYER) {
-			if (path.size() > 0) {
-				
-				Node next = path.get(0);
-				
-				if (board.oMap[next.x][next.y]) {
-					calculatePath();
-					calculate();
-				} else {
-				
-					int nextX = next.x;
-					int nextY = next.y;					 
+		if (active == 1) {
+			if (race != RACE_PLAYER) {
+				if (path.size() > 0) {
 					
-					if (nextX > 0 && nextY > 0) {
-						int dX = nextX - snakeX;
-						int dY = nextY - snakeY;
+					Node next = path.get(0);
+					
+					if (board.oMap[next.x][next.y]) {
+						calculatePath();
+						calculate();
+					} else {
+					
+						int nextX = next.x;
+						int nextY = next.y;					 
 						
-						if (dX == -1 && dY == 0) {
-							currentCmd = CMD_LEFT;
-						} else 
-						
-						if (dX == 1 && dY == 0) {
-							currentCmd = CMD_RIGHT;
-						} else
-						
-						if (dX == 0 && dY == -1) {
-							currentCmd = CMD_UP;
-						} else
-						
-						if (dX == 0 && dY == 1) {
-							currentCmd = CMD_DOWN;
+						if (nextX > 0 && nextY > 0) {
+							int dX = nextX - snakeX;
+							int dY = nextY - snakeY;
+							
+							currentCmd = getCommandByShift(dX, dY);
+							
 						}
-						
+						path.remove(0);
+						body.calculateByCommand();
 					}
-					path.remove(0);
-					body.calculateByCommand();
+				} else {
+					if (calculatePath()) {
+						calculate();
+					} else {
+						currentCmd = 0;
+					}
+				}
+				if (currentCmd == 0) {
+					deactivateSnake();
 				}
 			} else {
-				if (calculatePath()) {
-					calculate();
-				} else {
-					currentCmd = 0;
-				}
+				body.calculateByCommand();
 			}
-		} else {
-			body.calculateByCommand();
-		}		
+		}
+	}
+	
+	private boolean calculateBestFreeMove() {
+		for (int x = -1 ; x < 2 ; x++) {
+			for(int y = -1 ; y < 2 ; y++) {
+				
+				
+				if (x == 0 && y == 0) {
+					continue;
+				}
+				
+				if ((x != 0) && (y != 0)) {
+					continue;
+				}
+				
+				int xp = x + snakeX;
+				int yp = y + snakeY;
+				
+				if (xp > 0 && yp > 0 && xp <= board.cnHorizontal && yp <= board.cnVertical && !board.oMap[xp][yp]) {
+					path.add(new Node(xp, yp));
+					return true;
+				}
+				
+			}
+		}
+		
+		return false;
+	}
+
+	private int getCommandByShift(int dX, int dY) {
+		if (dX == -1 && dY == 0) {
+			return CMD_LEFT;
+		} else 
+		
+		if (dX == 1 && dY == 0) {
+			return CMD_RIGHT;
+		} else
+		
+		if (dX == 0 && dY == -1) {
+			return CMD_UP;
+		} else
+		
+		if (dX == 0 && dY == 1) {
+			return CMD_DOWN;
+		}
+		return 0;
 	}
 
 	public void draw() {
@@ -220,6 +259,18 @@ public class Snake {
 	
 	public void setCommand(int cmd) {
 		currentCmd = cmd;
+	}
+
+	public void deactivateSnake() {
+		active = 0;		
+		currentCmd = 0;
+		for(int i = 0 ; i < body.items.size(); i++) {			
+			body.items.get(i).setTarget((int)(Math.random() * board.cnHorizontal + 1), (int)(Math.random() * board.cnVertical + 1));
+			body.items.get(i).doShrink = 1;
+		}
+		if (race == RACE_PLAYER) {
+			board.gameOver = 1;
+		}
 	}
 
 }

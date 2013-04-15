@@ -111,14 +111,20 @@ public class SnakeBody {
 		
 		items.get(0).setTarget(snake.snakeX, snake.snakeY);
 		
+		if (snake.currentCmd != 0 && board.oMap[snake.snakeX][snake.snakeY]) {
+			snake.deactivateSnake();
+		}
+		
 	}
 
 	public void shrink() {
 		//SnakePiece piece = items.get(items.size() - 1);
 		if (items.size() > 1) {
+			SnakePiece piece = items.get(items.size()  -  1);
+			board.makeBoom(piece.x, piece.y);
 			items.get(items.size()  -  1).active = 0;
 			items.remove(items.size() - 1);
-			lastIndex -= 1;
+			lastIndex -= 1;			
 		}
 	}
 	

@@ -28,6 +28,7 @@ public class SnakePiece {
 	int delay = 1;
 	int iteration = 0;
 	int maxIterations = 0;
+	int doShrink = 0;
 	
 	public SnakePiece(int cX, int cY, SnakeBoard cBoard) {
 		board = cBoard;
@@ -58,7 +59,14 @@ public class SnakePiece {
 
 	public void draw(Canvas canvas, Paint paint, float halfSize) {
 		if (active == 1) {
-			canvas.drawRect(x - halfSize + 1, y - halfSize + 1, x + halfSize - 1, y + halfSize - 1, paint);
+			if (doShrink == 1) {
+				if (iteration != maxIterations) {
+					halfSize -= iteration * (halfSize / maxIterations);
+					canvas.drawRect(x - halfSize + 1, y - halfSize + 1, x + halfSize - 1, y + halfSize - 1, paint);
+				}
+			} else {
+				canvas.drawRect(x - halfSize + 1, y - halfSize + 1, x + halfSize - 1, y + halfSize - 1, paint);
+			}
 		}		
 	}	
 	

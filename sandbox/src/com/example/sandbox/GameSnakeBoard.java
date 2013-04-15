@@ -10,7 +10,7 @@ public class GameSnakeBoard extends SnakeBoard {
 	
 	final static int MIN_CELLS_NUMBER = 20;
 
-	SnakeBoxSurface surface;
+	
 	
 	Rect btnLeft;
 	Rect btnRight;
@@ -38,16 +38,33 @@ public class GameSnakeBoard extends SnakeBoard {
 		canvas = tCanvas;		
 		canvas.drawRGB(0, 0, 0);
 		
-		drawControlPanel();
+		if (gameOver != 1) {
+			drawControlPanel();
+		}
+		
 		drawScorePanel();
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			snakes.get(i).draw();
 		}
 		
+		if (booms != null) {
+			for(int i = 0 ; i < booms.size() ; i++) {
+				booms.get(i).draw(tCanvas);
+			}
+		}
+		
 		bugs.draw(canvas);
+		
+		if (gameOver == 1) {
+			drawGameOver();
+		}
 	}
 	
+	private void drawGameOver() {
+		canvas.drawText("GAME OVER", 50, 300, textPaint);
+	}
+
 	private void drawScorePanel() {
 		canvas.drawText("Score: " + Integer.toString((snakes.get(0).body.items.size() - 1) * 10), 0, spHeight, textPaint);
 		canvas.drawText("Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1), 150, spHeight, textPaint);
@@ -112,11 +129,22 @@ public class GameSnakeBoard extends SnakeBoard {
 			snakes.get(i).body.calculate();
 		}
 		
+		if (booms != null) {
+			for(int i = 0 ; i < booms.size() ; i++) {
+				booms.get(i).calculate();
+			}
+		}
+		
 	}
 
 	private void initialize() {
 		sWidth = canvas.getWidth();
 		sHeight = canvas.getHeight();
+		
+		snakes.clear();
+		bugs.bugs.clear();
+		
+		gameOver = 0;
 		
 		cnHorizontal = MIN_CELLS_NUMBER;
 		
@@ -208,14 +236,18 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 
 	public void processTouch(MotionEvent event) {
-		if (btnLeft.contains((int)event.getX(), (int)event.getY())) {
-			snakes.get(0).setCommand(Snake.CMD_LEFT);
-		} else if (btnRight.contains((int)event.getX(), (int)event.getY())) {
-			snakes.get(0).setCommand(Snake.CMD_RIGHT);
-		} else if (btnUp.contains((int)event.getX(), (int)event.getY())) {
-			snakes.get(0).setCommand(Snake.CMD_UP);
-		} else if (btnDown.contains((int)event.getX(), (int)event.getY())) {
-			snakes.get(0).setCommand(Snake.CMD_DOWN);
+		if (gameOver == 1 && event.getAction() == MotionEvent.ACTION_UP) {
+			surface.setBoard(surface.startBoard);
+		} else {
+			if (btnLeft.contains((int)event.getX(), (int)event.getY())) {
+				snakes.get(0).setCommand(Snake.CMD_LEFT);
+			} else if (btnRight.contains((int)event.getX(), (int)event.getY())) {
+				snakes.get(0).setCommand(Snake.CMD_RIGHT);
+			} else if (btnUp.contains((int)event.getX(), (int)event.getY())) {
+				snakes.get(0).setCommand(Snake.CMD_UP);
+			} else if (btnDown.contains((int)event.getX(), (int)event.getY())) {
+				snakes.get(0).setCommand(Snake.CMD_DOWN);
+			}
 		}
 	}
 	

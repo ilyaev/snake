@@ -2,6 +2,7 @@ package com.example.sandbox;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -31,6 +32,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	}
 	
 	public void setBoard(SnakeBoard nextBoard) {
+		Log.v("SNAKE", "SET BOARD");
 		board = nextBoard;
 	}
 

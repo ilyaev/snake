@@ -1,5 +1,6 @@
 package com.example.sandbox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Canvas;
@@ -7,6 +8,8 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 
 public class SnakeBoard {
+	
+	SnakeBoxSurface surface;
 	
 	final static int GAMEMODE_SOLO = 1;
 	final static int GAMEMODE_BATTLE = 2;
@@ -16,6 +19,8 @@ public class SnakeBoard {
 
 	public int sWidth;
 	public int sHeight;
+	
+	int gameOver = 0;
 	
 	final static int NOT_INITED	= 0;
 	final static int INITED 	= 1;
@@ -41,6 +46,8 @@ public class SnakeBoard {
 	
 	SnakeBugList bugs = null;
 	List<Snake> snakes;
+	
+	List<ParticleList> booms = null;
 	
 	boolean oMap[][];
 	
@@ -85,9 +92,27 @@ public class SnakeBoard {
 		}
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
-			for (int j = 0 ; j < snakes.get(i).body.items.size() ; j++) {
-				oMap[snakes.get(i).body.items.get(j).cellX][snakes.get(i).body.items.get(j).cellY] = true;			
+			if (snakes.get(i).active == 1) {
+				for (int j = 0 ; j < snakes.get(i).body.items.size() ; j++) {
+					oMap[snakes.get(i).body.items.get(j).cellX][snakes.get(i).body.items.get(j).cellY] = true;			
+				}
 			}
 		}
+	}	
+	
+	public void makeBoom(float x, float y) {
+		if (booms == null) {
+			booms = new ArrayList<ParticleList>();
+		}
+		
+		ParticleList particles = new ParticleList();
+		
+		for(int i = 0 ; i < 30 ; i++) {			
+			Particle particle = new Particle(x, y);
+			particle.setXYDestination((float)Math.random() * sWidth, (float)Math.random() * sHeight, 30);
+			particles.add(particle);
+		}		
+		
+		booms.add(particles);
 	}
 }
