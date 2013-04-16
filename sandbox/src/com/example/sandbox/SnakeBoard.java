@@ -20,6 +20,9 @@ public class SnakeBoard {
 	public int sWidth;
 	public int sHeight;
 	
+	Quote quote;
+	String funnyText;
+	
 	int gameOver = 0;
 	
 	final static int NOT_INITED	= 0;
@@ -54,6 +57,8 @@ public class SnakeBoard {
 	public Canvas canvas;
 	
 	long lastTimeStamp = 0;
+
+	public long gameOverCountdown = 0;
 	
 	public void draw(Canvas tCanvas) {
 		canvas = tCanvas;

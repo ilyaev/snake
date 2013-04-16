@@ -15,6 +15,7 @@ public class Button {
 	
 	int bW;
 	int bH;
+	public int fontSize = 0;
 	
 	public Button(String tCaption) {
 		caption = tCaption;
@@ -45,13 +46,27 @@ public class Button {
 	}
 	
 	public void draw(Canvas dCanvas) {
+		Rect bounds = new Rect();
+		
+		textPaint.getTextBounds(caption, 0, caption.length(), bounds);
+		
+		float shiftX = 5;
+		float shiftY = bH - 10;
+		
+		shiftX = (rect.width() - bounds.width()) / 2;
+		shiftY = bH - (rect.height() - bounds.height()) / 2;
+		
 		dCanvas.drawRect(rect, paint);
 		dCanvas.drawRect(rect.left + 1, rect.top + 1, rect.right - 1, rect.bottom - 1, fillPaint);
-		dCanvas.drawText(caption, rect.left + 5, rect.top + (bH - 10), textPaint);
+		dCanvas.drawText(caption, rect.left + shiftX, rect.top + shiftY, textPaint);		
 	}
 
 	public void setAction(int actionStart) {
 		action = actionStart;
+	}
+
+	public void setFontSize(int fSize) {
+		textPaint.setTextSize(fSize);		
 	}
 
 }

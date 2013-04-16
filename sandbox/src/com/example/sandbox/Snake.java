@@ -269,6 +269,8 @@ public class Snake {
 			body.items.get(i).doShrink = 1;
 		}
 		if (race == RACE_PLAYER) {
+			board.gameOverCountdown = System.currentTimeMillis();
+			board.funnyText = "\"" + board.quote.nextQuote() + "\"\n\n" + board.quote.nextAuthor();
 			board.gameOver = 1;
 		}
 	}

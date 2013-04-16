@@ -277,25 +277,31 @@ public class StartSnakeBoard extends SnakeBoard {
 		int bHeight = 70;
 		int bWidth = 250;
 		
-		Button btn = new Button("Solo");
+		Button btn = new Button("SOLO");
 		btn.setPosition(shiftX, shiftY);
+		
 		btn.setSize(bWidth, bHeight);
+		btn.setFontSize(40);
 		btn.setAction(StartSnakeBoard.ACTION_SOLO);		
 		buttons.add(btn);
 		
 		shiftY += bHeight + 20;
 		
-		btn = new Button("Battle");
+		btn = new Button("BATTLE");
+		
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
+		btn.setFontSize(40);
 		btn.setAction(StartSnakeBoard.ACTION_BATTLE);	
 		buttons.add(btn);
 		
 		shiftY += bHeight + 20;
 		
-		btn = new Button("Survival");
+		btn = new Button("SURVIVAL");
+		
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
+		btn.setFontSize(40);
 		btn.setAction(StartSnakeBoard.ACTION_SURVIVAL);	
 		buttons.add(btn);		
 	}
