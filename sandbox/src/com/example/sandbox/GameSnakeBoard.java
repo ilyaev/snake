@@ -3,6 +3,7 @@ package com.example.sandbox;
 import java.util.ArrayList;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 
@@ -10,7 +11,12 @@ public class GameSnakeBoard extends SnakeBoard {
 	
 	final static int MIN_CELLS_NUMBER = 20;
 
+	float x1Left, x2Left, y1Left, y2Left, y3Left;
+	float x1Right, x2Right, y1Right, y2Right, y3Right;
+	float x1Up, x2Up, x3Up, y1Up, y2Up;
+	float x1Down, x2Down, x3Down, y1Down, y2Down;
 	
+	Path bPathLeft, bPathRight, bPathUp, bPathDown;
 	
 	Rect btnLeft;
 	Rect btnRight;
@@ -51,7 +57,7 @@ public class GameSnakeBoard extends SnakeBoard {
 		scorePaint.setARGB(255, 255, 255, 255);
 		scorePaint.setTextSize(80);
 		
-		btnReplay = new Button("REPLAY");
+		btnReplay = new Button("AGAIN");
 		btnMenu = new Button("MENU");	
 		
 		fillPaint = new Paint();
@@ -103,31 +109,32 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 	
 	private void drawGameOver() {
-		
-		int pWidth = (int)(sWidth - 20);
-		int pHeight = 280;
-		
-		Rect panel = new Rect((sWidth - pWidth) / 2, (sHeight - pHeight - 100) / 2, (sWidth - pWidth) / 2 + pWidth, (sHeight - pHeight  - 100) / 2 + pHeight);
-		canvas.drawRect(panel, fillPaint);
-
-		Rect bounds = new Rect();
-		textPaint.getTextBounds("Game Over", 0, 9, bounds);
-		canvas.drawText("Game Over", panel.left + (panel.width() - bounds.width()) / 2, panel.top + 30, textPaint);
-		
-		String scoreStr = Integer.toString(getScore());
-		
-		Rect scoreBounds = new Rect();
-		scorePaint.getTextBounds(scoreStr, 0, scoreStr.length(), scoreBounds);
-		
-		canvas.drawText(scoreStr, panel.left + (panel.width() - scoreBounds.width()) / 2, panel.top + 30 + scorePaint.getTextSize() + 5, scorePaint);
-		
-		if (System.currentTimeMillis() - gameOverCountdown > 1000) {
-			drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
-		}		
-		
-		if (System.currentTimeMillis() - gameOverCountdown > 2000) {
-			btnReplay.draw(canvas);
-			btnMenu.draw(canvas);
+		if (System.currentTimeMillis() - gameOverCountdown > 1000) {		
+			int pWidth = (int)(sWidth - 20);
+			int pHeight = 280;
+			
+			Rect panel = new Rect((sWidth - pWidth) / 2, (sHeight - pHeight - 100) / 2, (sWidth - pWidth) / 2 + pWidth, (sHeight - pHeight  - 100) / 2 + pHeight);
+			canvas.drawRect(panel, fillPaint);
+	
+			Rect bounds = new Rect();
+			textPaint.getTextBounds("Your Score:", 0, 9, bounds);
+			canvas.drawText("Your Score:", panel.left + (panel.width() - bounds.width()) / 2, panel.top + 30, textPaint);
+			
+			String scoreStr = Integer.toString(getScore());
+			
+			Rect scoreBounds = new Rect();
+			scorePaint.getTextBounds(scoreStr, 0, scoreStr.length(), scoreBounds);
+			
+			canvas.drawText(scoreStr, panel.left + (panel.width() - scoreBounds.width()) / 2, panel.top + 30 + scorePaint.getTextSize() + 5, scorePaint);
+			
+			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
+				drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
+			}		
+			
+			if (System.currentTimeMillis() - gameOverCountdown > 3000) {
+				btnReplay.draw(canvas);
+				btnMenu.draw(canvas);
+			}
 		}
 	}
 	
@@ -146,7 +153,13 @@ public class GameSnakeBoard extends SnakeBoard {
 		canvas.drawRect(btnRight, whiteFramePaint);
 		
 		canvas.drawRect(btnUp, whiteFramePaint);
-		canvas.drawRect(btnDown, whiteFramePaint);
+		canvas.drawRect(btnDown, whiteFramePaint);	
+		
+		canvas.drawPath(bPathLeft, whiteFramePaint);
+		canvas.drawPath(bPathRight, whiteFramePaint);
+		
+		canvas.drawPath(bPathUp, whiteFramePaint);
+		canvas.drawPath(bPathDown, whiteFramePaint);
 	}
 
 	public void calculate(Canvas tCanvas) {
@@ -197,7 +210,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		funnyTextPaint = new Paint();
 		funnyTextPaint = new Paint();
 		funnyTextPaint.setARGB(255, 255, 255, 255);
-		funnyTextPaint.setTextSize(25);
+		funnyTextPaint.setTextSize(25);		
+		
 		
 		snakes.clear();
 		bugs.bugs.clear();
@@ -246,6 +260,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		oMap = new boolean[cnHorizontal + 1][cnVertical + 1];
 		
+		initControlButtons();
+		
 		
 		switch (gameMode) {
 			case GAMEMODE_SOLO:
@@ -264,6 +280,61 @@ public class GameSnakeBoard extends SnakeBoard {
 		rebuildObstMap();	
 	}	
 	
+	private void initControlButtons() {
+		x1Left = btnLeft.width() / 5;
+		x2Left = (btnLeft.width() / 5) * 4;
+		
+		y1Left = btnLeft.height() / 6;
+		y2Left = (btnLeft.height() / 6) * 5;
+		y3Left = btnLeft.height() / 2;
+		
+		bPathLeft = new Path();
+		bPathLeft.moveTo(btnLeft.left + x1Left, btnLeft.top + y3Left);
+		bPathLeft.lineTo(btnLeft.left + x2Left,  btnLeft.top + y1Left);
+		bPathLeft.lineTo(btnLeft.left + x2Left,  btnLeft.top + y2Left);
+		bPathLeft.lineTo(btnLeft.left + x1Left,  btnLeft.top + y3Left);
+		
+		x1Right = (btnRight.width() / 5) * 4;
+		x2Right = btnRight.width() / 5;
+		
+		y2Right = btnRight.height() / 6;
+		y1Right = (btnRight.height() / 6) * 5;
+		y3Right = btnRight.height() / 2;
+		
+		bPathRight = new Path();
+		bPathRight.moveTo(btnRight.left + x1Right, btnRight.top + y3Right);
+		bPathRight.lineTo(btnRight.left + x2Right,  btnRight.top + y1Right);
+		bPathRight.lineTo(btnRight.left + x2Right,  btnRight.top + y2Right);
+		bPathRight.lineTo(btnRight.left + x1Right,  btnRight.top + y3Right);
+		
+		x1Up = btnUp.width() / 8;
+		x2Up = (btnUp.width() / 8) * 7;
+		
+		y1Up = (btnUp.height() / 4) * 3;
+		y2Up = btnUp.height() / 4;
+		x3Up = btnUp.width() / 2;
+		
+		bPathUp = new Path();
+		bPathUp.moveTo(btnUp.left + x1Up, btnUp.top + y1Up);
+		bPathUp.lineTo(btnUp.left + x3Up,  btnUp.top + y2Up);
+		bPathUp.lineTo(btnUp.left + x2Up,  btnUp.top + y1Up);
+		bPathUp.lineTo(btnUp.left + x1Up,  btnUp.top + y1Up);
+		
+		
+		x1Down = btnDown.width() / 8;
+		x2Down = (btnDown.width() / 8) * 7;
+		
+		y2Down = (btnDown.height() / 4) * 3;
+		y1Down = btnDown.height() / 4;
+		x3Down = btnDown.width() / 2;
+		
+		bPathDown = new Path();
+		bPathDown.moveTo(btnDown.left + x1Down, btnDown.top + y1Down);
+		bPathDown.lineTo(btnDown.left + x3Down,  btnDown.top + y2Down);
+		bPathDown.lineTo(btnDown.left + x2Down,  btnDown.top + y1Down);
+		bPathDown.lineTo(btnDown.left + x1Down,  btnDown.top + y1Down);		
+	}
+
 	private void startGameSolo() {
 		bugs.spawnBug(Snake.RACE_PLAYER);
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
@@ -301,13 +372,13 @@ public class GameSnakeBoard extends SnakeBoard {
 				surface.setBoard(surface.startBoard);
 			};			
 		} else {
-			if (btnLeft.contains((int)event.getX(), (int)event.getY())) {
+			if (btnLeft.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_RIGHT) {
 				snakes.get(0).setCommand(Snake.CMD_LEFT);
-			} else if (btnRight.contains((int)event.getX(), (int)event.getY())) {
+			} else if (btnRight.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_LEFT) {
 				snakes.get(0).setCommand(Snake.CMD_RIGHT);
-			} else if (btnUp.contains((int)event.getX(), (int)event.getY())) {
+			} else if (btnUp.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_DOWN) {
 				snakes.get(0).setCommand(Snake.CMD_UP);
-			} else if (btnDown.contains((int)event.getX(), (int)event.getY())) {
+			} else if (btnDown.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_UP) {
 				snakes.get(0).setCommand(Snake.CMD_DOWN);
 			}
 		}

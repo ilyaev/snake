@@ -46,7 +46,6 @@ public class SnakeBody {
 		while (iterator.hasNext()) {
 			SnakePiece piece = iterator.next();
 			piece.draw(canvas, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint), halfSize);
-			//canvas.drawCircle(piece.x, piece.y, halfSize - 1, (snake.race == Snake.RACE_PLAYER ? board.greenPaint : board.darkGreenPaint));
 		}
 	}
 	
@@ -94,31 +93,24 @@ public class SnakeBody {
 			snake.snakeY += 1;
 		}
 		
-		if (snake.snakeX < 1) {
-			snake.snakeX = board.cnHorizontal;
-		} else if (snake.snakeX > board.cnHorizontal) {
-			snake.snakeX = 1;
-		}
-		
-		if (snake.snakeY < 1) {
-			snake.snakeY= board.cnVertical;
-		} else if (snake.snakeY > board.cnVertical) {
-			snake.snakeY = 1;
-		}
-		
-		items.get(0).cellX = snake.snakeX;
-		items.get(0).cellY = snake.snakeY;
-		
-		items.get(0).setTarget(snake.snakeX, snake.snakeY);
-		
-		if (snake.currentCmd != 0 && board.oMap[snake.snakeX][snake.snakeY]) {
+		if (snake.snakeX < 1 || snake.snakeX > board.cnHorizontal || snake.snakeY < 1 || snake.snakeY > board.cnVertical) {
 			snake.deactivateSnake();
+		}
+		
+		if (snake.active == 1) {
+			items.get(0).cellX = snake.snakeX;
+			items.get(0).cellY = snake.snakeY;
+			
+			items.get(0).setTarget(snake.snakeX, snake.snakeY);
+			
+			if (snake.currentCmd != 0 && board.oMap[snake.snakeX][snake.snakeY]) {
+				snake.deactivateSnake();
+			}
 		}
 		
 	}
 
 	public void shrink() {
-		//SnakePiece piece = items.get(items.size() - 1);
 		if (items.size() > 1) {
 			SnakePiece piece = items.get(items.size()  -  1);
 			board.makeBoom(piece.x, piece.y);

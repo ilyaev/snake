@@ -27,7 +27,7 @@ public class SnakePiece {
 	int pType = TYPE_BODY;
 	int delay = 1;
 	int iteration = 0;
-	int maxIterations = 0;
+	int maxIterations = 12;
 	int doShrink = 0;
 	
 	public SnakePiece(int cX, int cY, SnakeBoard cBoard) {
@@ -42,7 +42,6 @@ public class SnakePiece {
 		targetX = board.getCellCenterX(cX);
 		targetY = board.getCellCenterY(cY);
 		
-		maxIterations = 12;
 		iteration = 0;
 		
 		dX = (targetX - x) / maxIterations;

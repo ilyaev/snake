@@ -264,7 +264,8 @@ public class Snake {
 	public void deactivateSnake() {
 		active = 0;		
 		currentCmd = 0;
-		for(int i = 0 ; i < body.items.size(); i++) {			
+		for(int i = 0 ; i < body.items.size(); i++) {		
+			body.items.get(i).maxIterations = 60;
 			body.items.get(i).setTarget((int)(Math.random() * board.cnHorizontal + 1), (int)(Math.random() * board.cnVertical + 1));
 			body.items.get(i).doShrink = 1;
 		}
@@ -273,6 +274,14 @@ public class Snake {
 			board.funnyText = "\"" + board.quote.nextQuote() + "\"\n\n" + board.quote.nextAuthor();
 			board.gameOver = 1;
 		}
+		
+		SnakeBug bug = board.bugs.getBugByRace(race); 
+		
+		if (bug != null) {
+			bug.active = 0;
+			board.bugs.bugs.remove(bug);
+		}
+		
 	}
 
 }
