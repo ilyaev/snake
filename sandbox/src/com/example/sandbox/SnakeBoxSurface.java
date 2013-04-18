@@ -16,9 +16,6 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	SnakeBoard gameBoard = null;
 	SnakeBoard startBoard = null;
 	
-	int sWidth = 0;
-	int sHeight = 0;
-	
 	private final static int 	MAX_FPS = 60;
     private final static int	MAX_FRAME_SKIPS = 5;
     private final static int	FRAME_PERIOD = 1000 / MAX_FPS;
@@ -32,8 +29,9 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	}
 	
 	public void setBoard(SnakeBoard nextBoard) {
-		Log.v("SNAKE", "SET BOARD");
-		board = nextBoard;
+		synchronized (sHolder) {
+			board = nextBoard;
+		}
 	}
 
 	@SuppressWarnings("static-access")
@@ -51,8 +49,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 
 			sleepTime = 0;
 			
-			Canvas canvas = null;
-			
+			Canvas canvas = null;			
 			
 			
 			try {
@@ -60,11 +57,6 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 				
 				beginTime = System.currentTimeMillis();
 				framesSkipped = 0;
-				
-				if (sWidth == 0) {
-					sWidth = canvas.getWidth();
-					sHeight = canvas.getHeight();
-				}
 				
 				// calculate
 				board.calculate(canvas);				

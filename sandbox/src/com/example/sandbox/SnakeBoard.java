@@ -45,6 +45,7 @@ public class SnakeBoard {
 	Paint whiteFramePaint;
 	Paint orangePaint;
 	Paint greenPaint;
+	Paint buttonPressedPaint;
 	Paint darkGreenPaint;
 	
 	SnakeBugList bugs = null;

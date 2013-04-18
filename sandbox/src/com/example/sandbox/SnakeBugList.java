@@ -36,6 +36,21 @@ public class SnakeBugList {
 			spawnBug(race);
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
+			
+			if (r.nextInt(100) <= 5) {
+				bug.type = SnakeBug.BUG_SCORE;
+			}
+			
+			if (r.nextInt(100) <= 10) {
+				bug.type = SnakeBug.BUG_TRIPPLE;
+			}
+			
+			if (r.nextInt(100) <= 15) {
+				bug.maxIterations = 60;
+				bug.iteration = 60;
+				bug.type = SnakeBug.BUG_CHERRY;
+			}
+			
 			bug.setRace(race);			
 			bugs.add(bug);
 		}
@@ -46,7 +61,16 @@ public class SnakeBugList {
 		
 		while(iterator.hasNext()) {
 			SnakeBug bug = iterator.next();
-			canvas.drawCircle(board.getCellCenterX(bug.cellX), board.getCellCenterY(bug.cellY), board.cellSizePx / 2, (bug.race == Snake.RACE_PLAYER ? redPaint : darkRedPaint));
+			bug.draw(canvas, board.getCellCenterX(bug.cellX), board.getCellCenterY(bug.cellY), board.cellSizePx, (bug.race == Snake.RACE_PLAYER ? redPaint : darkRedPaint));
+		}
+	}
+	
+	public void calculate() {
+		Iterator<SnakeBug> iterator = bugs.iterator();
+		
+		while(iterator.hasNext()) {
+			SnakeBug bug = iterator.next();
+			bug.calculate();
 		}
 	}
 
@@ -62,9 +86,12 @@ public class SnakeBugList {
 			for(int i = 0 ; i < board.snakes.size() ; i++) {
 				if (bug.cellX == board.snakes.get(i).snakeX && bug.cellY == board.snakes.get(i).snakeY && bug.active == 1) {
 					bug.active = 0;
-					bug.eatenBy = board.snakes.get(i).race;
+					bug.eatenBy = bug.type == SnakeBug.BUG_SCORE ? -1 : board.snakes.get(i).race;
 					toRemove.add(bug);					
 					board.snakes.get(i).path.clear();
+					if (bug.type == SnakeBug.BUG_SCORE) {
+						board.snakes.get(i).score += 50;
+					}
 				}
 			}
 		}
@@ -78,12 +105,13 @@ public class SnakeBugList {
 				
 				bugs.remove(toRemove.get(i));
 				
-				if (bug.eatenBy == bug.race) {
-					board.getSnakeByRace(bug.race).body.grow();						
-				} else {
-					board.getSnakeByRace(bug.race).body.shrink();
-				}
-				
+				if (bug.eatenBy >= 0) {
+					if (bug.eatenBy == bug.race) {
+						board.getSnakeByRace(bug.race).body.grow(bug.type);						
+					} else {
+						board.getSnakeByRace(bug.race).body.shrink(bug.type);
+					}
+				}				
 			}
 		}
 		

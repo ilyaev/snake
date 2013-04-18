@@ -31,6 +31,7 @@ public class Snake {
 	int active = 1;
 	
 	int pathRecalculated = 0;
+	public int score = 0;
 	
 	public Snake(int sX, int sY, SnakeBoard sBoard) {
 		snakeX = sX;

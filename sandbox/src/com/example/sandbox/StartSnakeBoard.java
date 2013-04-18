@@ -105,6 +105,8 @@ public class StartSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		bugs.calculate();
+		
 		if (booms != null) {
 			for(int i = 0 ; i < booms.size() ; i++) {
 				booms.get(i).calculate();

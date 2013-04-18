@@ -24,12 +24,26 @@ public class SnakeBody {
 		items.add(head);
 	}
 	
-	public void grow() {
+	public void grow(int bugType) {
 		SnakePiece lastPart = items.get(lastIndex);
+
 		SnakePiece part = new SnakePiece(lastPart.cellX, lastPart.cellY, board);
-		
 		items.add(part);
 		lastIndex += 1;
+		
+		if (bugType == SnakeBug.BUG_TRIPPLE || bugType == SnakeBug.BUG_CHERRY) {
+			SnakePiece part2 = new SnakePiece(lastPart.cellX, lastPart.cellY, board);
+			part2.delay = 2;
+			items.add(part2);
+			lastIndex += 1;
+		}
+			
+		if (bugType == SnakeBug.BUG_TRIPPLE) {
+			SnakePiece part3 = new SnakePiece(lastPart.cellX, lastPart.cellY, board);
+			part3.delay = 3;
+			items.add(part3);
+			lastIndex += 1;
+		}
 	}
 	
 	public void addTail(int cX, int cY) {
@@ -110,8 +124,24 @@ public class SnakeBody {
 		
 	}
 
-	public void shrink() {
+	public void shrink(int bugType) {
 		if (items.size() > 1) {
+			SnakePiece piece = items.get(items.size()  -  1);
+			board.makeBoom(piece.x, piece.y);
+			items.get(items.size()  -  1).active = 0;
+			items.remove(items.size() - 1);
+			lastIndex -= 1;			
+		}
+		
+		if (items.size() > 1 && (bugType == SnakeBug.BUG_TRIPPLE || bugType == SnakeBug.BUG_CHERRY)) {
+			SnakePiece piece = items.get(items.size()  -  1);
+			board.makeBoom(piece.x, piece.y);
+			items.get(items.size()  -  1).active = 0;
+			items.remove(items.size() - 1);
+			lastIndex -= 1;			
+		}
+		
+		if (items.size() > 1 && bugType == SnakeBug.BUG_TRIPPLE) {
 			SnakePiece piece = items.get(items.size()  -  1);
 			board.makeBoom(piece.x, piece.y);
 			items.get(items.size()  -  1).active = 0;
