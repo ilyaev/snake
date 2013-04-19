@@ -113,6 +113,12 @@ public class StartSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		if (freezeStartTime != 0) {
+			if (System.currentTimeMillis() - freezeStartTime  > 5000) {
+				unFreezeSnakes();
+			}
+		}
+		
 	}
 	
 	public void initialize() {

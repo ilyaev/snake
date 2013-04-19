@@ -26,7 +26,7 @@ public class SnakeBug {
 	static final int BUG_CHERRY = 2;
 	static final int BUG_FREEZ = 4;
 	static final int BUG_TRIPPLE = 3;
-	static final int BUG_MUSHROOM = 5;
+	static final int BUG_MUSHROOM = 6;
 	static final int BUG_SCORE = 5;
 	
 	int type = BUG_APPLE;
@@ -52,6 +52,9 @@ public class SnakeBug {
 	float sx1,sx2,sx3,sy1, sy2, sy3;
 	float cellSize = 1;
 	
+	int transparency = 0;
+	Paint whitePaint, redPaint;
+	
 	public SnakeBug(int cX, int cY) {
 		cellX = cX;
 		cellY = cY;
@@ -60,6 +63,12 @@ public class SnakeBug {
 		
 		starPaint = new Paint();
 		starPaint.setARGB(255, 255, 215, 0);
+		
+		whitePaint = new Paint();
+		whitePaint.setARGB(255, 255, 255, 255);
+		
+		redPaint = new Paint();
+		redPaint.setARGB(255, 255, 0, 0);
 	}
 	
 	public void setRace(int bRace) {
@@ -67,7 +76,14 @@ public class SnakeBug {
 	}
 	
 	public void calculate() {
-		if (inited) {			
+		if (inited) {
+			if (transparency < 255) {
+				transparency += (int) (255 / 60);
+				if (transparency > 255) {
+					transparency = 255;
+				}
+				
+			}
 			if (type == BUG_TRIPPLE || type == BUG_CHERRY) {
 				if (iteration == maxIterations) {
 					generateNext();
@@ -155,7 +171,19 @@ public class SnakeBug {
 		
 	}
 
-	public void draw(Canvas canvas, float cellCenterX, float cellCenterY, float cellSizePx, Paint paint) {
+	public void draw(Canvas canvas, float cellCenterX, float cellCenterY, float cellSizePx, Paint tPaint) {
+		
+		Paint paint;
+		
+		if (transparency < 255) {
+			paint = new Paint(tPaint);
+			paint.setAlpha(transparency);
+			starPaint.setAlpha(transparency);
+			whitePaint.setAlpha(transparency);
+			redPaint.setAlpha(transparency);
+		} else {
+			paint = tPaint;
+		}
 		
 		cellSize = cellSizePx;
 		centerX = cellCenterX;
@@ -169,28 +197,36 @@ public class SnakeBug {
 		
 		switch (type) {
 		case BUG_APPLE:
-			canvas.drawCircle(cellCenterX, cellCenterY, cellSizePx / 2, paint);
-			break;
-		case BUG_TRIPPLE:			
-			canvas.drawCircle(leftX + x1, topY + y1, cellSizePx / 5, paint);
-			canvas.drawCircle(leftX + x2, topY + y2, cellSizePx / 5, paint);
-			canvas.drawCircle(leftX + x3, topY + y3, cellSizePx / 5, paint);
-			break;
-		case BUG_CHERRY:
-			canvas.drawCircle(leftX + x1, topY + y1, cellSizePx / 4, paint);
-			canvas.drawCircle(leftX + x2, topY + y2, cellSizePx / 4, paint);
-			
-			canvas.drawLine(leftX + x1, topY + y1, leftX + x3, topY + y3, paint);
-			canvas.drawLine(leftX + x2, topY + y2, leftX + x3, topY + y3, paint);
-		
-		case BUG_SCORE:
-			if (starPath != null) {
-				canvas.drawPath(starPath, starPaint);
-				canvas.drawCircle(centerX, centerY, (float) (cellSize / 4.5), blackPaint);
-			}
-			break;
-		default:
-			break;
+				canvas.drawCircle(cellCenterX, cellCenterY, cellSizePx / 2, paint);
+				break;
+			case BUG_TRIPPLE:			
+				canvas.drawCircle(leftX + x1, topY + y1, cellSizePx / 5, paint);
+				canvas.drawCircle(leftX + x2, topY + y2, cellSizePx / 5, paint);
+				canvas.drawCircle(leftX + x3, topY + y3, cellSizePx / 5, paint);
+				break;
+			case BUG_CHERRY:
+				canvas.drawCircle(leftX + x1, topY + y1, cellSizePx / 4, paint);
+				canvas.drawCircle(leftX + x2, topY + y2, cellSizePx / 4, paint);
+				
+				canvas.drawLine(leftX + x1, topY + y1, leftX + x3, topY + y3, paint);
+				canvas.drawLine(leftX + x2, topY + y2, leftX + x3, topY + y3, paint);
+				break;
+			case BUG_SCORE:
+				if (starPath != null) {
+					canvas.drawPath(starPath, starPaint);
+					canvas.drawCircle(centerX, centerY, (float) (cellSize / 4.5), blackPaint);
+				}
+				break;
+			case BUG_MUSHROOM:
+				canvas.drawCircle(cellCenterX, cellCenterY, cellSizePx / 2, redPaint);
+				canvas.drawRect(leftX, topY + cellSizePx / 2, leftX + cellSizePx, topY + cellSizePx, blackPaint);
+				canvas.drawRect(cellCenterX - cellSizePx / 4, topY + cellSizePx / 2, cellCenterX + cellSizePx / 4, topY + cellSizePx, whitePaint);
+				canvas.drawCircle(leftX + (float)(cellSizePx / 4.5), topY + cellSizePx / 4, 2, whitePaint);
+				canvas.drawCircle(leftX + (float)((cellSizePx / 4.5)*2.8), topY + (float)(cellSizePx / 5), 2, whitePaint);
+				canvas.drawCircle(leftX + (float)((cellSizePx / 4.5)*3.7), topY + (float)(cellSizePx / 3.5), 2, whitePaint);
+				break;
+			default:
+				break;
 		}
 		
 	}

@@ -37,8 +37,12 @@ public class SnakeBugList {
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
 			
-			if (r.nextInt(100) <= 5) {
+			if (r.nextInt(100) <= 7) {
 				bug.type = SnakeBug.BUG_SCORE;
+			}
+			
+			if (r.nextInt(100) <= 5) {
+				bug.type = SnakeBug.BUG_MUSHROOM;
 			}
 			
 			if (r.nextInt(100) <= 10) {
@@ -106,9 +110,16 @@ public class SnakeBugList {
 				bugs.remove(toRemove.get(i));
 				
 				if (bug.eatenBy >= 0) {
+					
+					if (bug.type == SnakeBug.BUG_MUSHROOM) {
+						board.freezeSnakes(bug.eatenBy);
+						board.getSnakeByRace(bug.eatenBy).score += 20;
+					}
+					
 					if (bug.eatenBy == bug.race) {
 						board.getSnakeByRace(bug.race).body.grow(bug.type);						
 					} else {
+						board.getSnakeByRace(bug.eatenBy).score += 5; 
 						board.getSnakeByRace(bug.race).body.shrink(bug.type);
 					}
 				}				

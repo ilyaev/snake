@@ -60,6 +60,8 @@ public class SnakeBoard {
 	long lastTimeStamp = 0;
 
 	public long gameOverCountdown = 0;
+
+	long freezeStartTime = 0;
 	
 	public void draw(Canvas tCanvas) {
 		canvas = tCanvas;
@@ -120,5 +122,21 @@ public class SnakeBoard {
 		}		
 		
 		booms.add(particles);
+	}
+
+	public void freezeSnakes(int race) {
+		freezeStartTime = System.currentTimeMillis();
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			if (snakes.get(i).race != race) {
+				snakes.get(i).live = 0;
+			}
+		}
+	}
+	
+	public void unFreezeSnakes() {
+		freezeStartTime = 0;
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			snakes.get(i).live = 1;
+		}
 	}
 }

@@ -168,7 +168,7 @@ public class Snake {
 	}
 
 	public void calculate() {
-		if (active == 1) {
+		if (active == 1 && live == 1) {
 			if (race != RACE_PLAYER) {
 				if (path.size() > 0) {
 					
@@ -263,6 +263,7 @@ public class Snake {
 	}
 
 	public void deactivateSnake() {
+		board.snakes.get(0).score += 100;
 		active = 0;		
 		currentCmd = 0;
 		for(int i = 0 ; i < body.items.size(); i++) {		

@@ -217,6 +217,12 @@ public class GameSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		if (freezeStartTime != 0) {
+			if (System.currentTimeMillis() - freezeStartTime  > 5000) {
+				unFreezeSnakes();
+			}
+		}
+		
 	}
 
 	private void initialize() {
@@ -371,6 +377,7 @@ public class GameSnakeBoard extends SnakeBoard {
 	private void startGameSolo() {
 		bugs.spawnBug(Snake.RACE_PLAYER);
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
+		snakes.get(0).live = 1;
 	}
 	
 	private void startGameBattle() {
@@ -380,19 +387,23 @@ public class GameSnakeBoard extends SnakeBoard {
 		bugs.spawnBug(Snake.RACE_ENEMY3);
 		
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
+		snakes.get(0).live = 1;
 		
 		Snake foeSnake = new Snake(10,10, this);
 		foeSnake.race = Snake.RACE_ENEMY1;
+		foeSnake.live = 1;
 		
 		snakes.add(foeSnake);
 		
 		Snake foeSnake2 = new Snake(15,15, this);
 		foeSnake2.race = Snake.RACE_ENEMY2;
+		foeSnake2.live = 1;
 		
 		snakes.add(foeSnake2);
 		
 		Snake foeSnake3 = new Snake(5,5, this);
 		foeSnake3.race = Snake.RACE_ENEMY3;
+		foeSnake3.live = 1;
 		
 		snakes.add(foeSnake3);
 	}
@@ -405,6 +416,12 @@ public class GameSnakeBoard extends SnakeBoard {
 				surface.setBoard(surface.startBoard);
 			};			
 		} else {
+			
+			btnRightState = -1;
+			btnUpState = -1;
+			btnDownState = -1;
+			btnLeftState = -1;
+			
 			if (btnLeft.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_RIGHT) {
 				btnLeftState = event.getAction();
 				snakes.get(0).setCommand(Snake.CMD_LEFT);
