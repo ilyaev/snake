@@ -335,6 +335,11 @@ public class StartSnakeBoard extends SnakeBoard {
 					surface.gameBoard.state = SnakeBoard.NOT_INITED;
 					surface.setBoard(surface.gameBoard);
 					break;
+				case StartSnakeBoard.ACTION_SURVIVAL:
+					surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
+					surface.gameBoard.state = SnakeBoard.NOT_INITED;
+					surface.setBoard(surface.gameBoard);
+					break;	
 				default:
 					break;
 			}

@@ -32,6 +32,7 @@ public class Snake {
 	
 	int pathRecalculated = 0;
 	public int score = 0;
+	int kills = 0;
 	
 	public Snake(int sX, int sY, SnakeBoard sBoard) {
 		snakeX = sX;
@@ -262,8 +263,7 @@ public class Snake {
 		currentCmd = cmd;
 	}
 
-	public void deactivateSnake() {
-		board.snakes.get(0).score += 100;
+	public void deactivateSnake() {		
 		active = 0;		
 		currentCmd = 0;
 		for(int i = 0 ; i < body.items.size(); i++) {		
@@ -271,10 +271,16 @@ public class Snake {
 			body.items.get(i).setTarget((int)(Math.random() * board.cnHorizontal + 1), (int)(Math.random() * board.cnVertical + 1));
 			body.items.get(i).doShrink = 1;
 		}
+		
 		if (race == RACE_PLAYER) {
 			board.gameOverCountdown = System.currentTimeMillis();
 			board.funnyText = "\"" + board.quote.nextQuote() + "\"\n\n" + board.quote.nextAuthor();
 			board.gameOver = 1;
+		} else {
+			if (board.snakes.get(0).active == 1) {
+				board.snakes.get(0).score += 100;
+				board.snakes.get(0).kills += 1;
+			}
 		}
 		
 		SnakeBug bug = board.bugs.getBugByRace(race); 

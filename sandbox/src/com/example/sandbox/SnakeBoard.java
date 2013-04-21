@@ -14,6 +14,8 @@ public class SnakeBoard {
 	final static int GAMEMODE_SOLO = 1;
 	final static int GAMEMODE_BATTLE = 2;
 	final static int GAMEMODE_SURVIVAL = 3;
+	
+	BlockList walls;
 
 	int gameMode = 1;
 
@@ -106,6 +108,12 @@ public class SnakeBoard {
 				}
 			}
 		}
+		
+		if (walls != null && walls.items.size() > 0) {
+			for(int i = 0 ; i < walls.items.size() ; i++) {
+				oMap[walls.items.get(i).x][walls.items.get(i).y] = true;
+			}
+		}
 	}	
 	
 	public void makeBoom(float x, float y) {
@@ -139,4 +147,21 @@ public class SnakeBoard {
 			snakes.get(i).live = 1;
 		}
 	}
+	
+	public void purgeSnakes() {
+		List<Snake> toRemove = new ArrayList<Snake>();
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			if (snakes.get(i).active == 0 && snakes.get(i).race != Snake.RACE_PLAYER) {
+				toRemove.add(snakes.get(i));
+			}
+		}
+		
+		if (toRemove.size() > 0) {
+			for(int i = 0 ; i < toRemove.size() ; i++) {
+				snakes.remove(toRemove.get(i));
+			}
+		}
+	}
+	
+	
 }

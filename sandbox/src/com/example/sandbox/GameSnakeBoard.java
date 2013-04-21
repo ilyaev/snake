@@ -1,6 +1,8 @@
 package com.example.sandbox;
 
 import java.util.ArrayList;
+import java.util.Random;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -15,6 +17,8 @@ public class GameSnakeBoard extends SnakeBoard {
 	float x1Right, x2Right, y1Right, y2Right, y3Right;
 	float x1Up, x2Up, x3Up, y1Up, y2Up;
 	float x1Down, x2Down, x3Down, y1Down, y2Down;
+	
+	long lastSnakeSpawn = 0;
 	
 	int btnLeftState, btnRightState, btnUpState, btnDownState = -1;
 	
@@ -66,6 +70,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		fillPaint.setARGB(170, 0,0,0);
 		
 		mBounds = new Rect();
+		
+		walls = new BlockList(this);
 	}
 	
 	public void drawMultilineText(String str, int x, int y, Paint paint, Canvas canvas) {
@@ -104,6 +110,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		}
 		
 		bugs.draw(canvas);
+		
+		walls.draw(canvas);
 		
 		if (gameOver == 1) {
 			drawGameOver();
@@ -147,7 +155,7 @@ public class GameSnakeBoard extends SnakeBoard {
 	private void drawScorePanel() {
 		canvas.drawText("Score: " + Integer.toString(getScore()), 0, spHeight, textPaint);
 		canvas.drawText("Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1), 150, spHeight, textPaint);
-		canvas.drawText("Kills: " + Integer.toString(tailLength), 270, spHeight, textPaint);
+		canvas.drawText("Kills: " + Integer.toString(snakes.get(0).kills), 270, spHeight, textPaint);
 	}
 	
 	private void drawControlPanel() {		
@@ -223,6 +231,27 @@ public class GameSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		if (gameMode == GAMEMODE_SURVIVAL &&  System.currentTimeMillis() - lastSnakeSpawn > 10000 && snakes.size() < 10) {
+			Random r = new Random();
+			int y = r.nextInt(cnVertical - 1) + 1;
+			if (!oMap[1][y]) {
+				
+				purgeSnakes();
+				
+				Snake nSnake = new Snake(1, y, this);
+				nSnake.race = r.nextInt(1000) + 10;
+				nSnake.live = 1;
+				bugs.spawnBug(nSnake.race);
+				nSnake.body.grow(SnakeBug.BUG_TRIPPLE);
+				snakes.add(nSnake);
+				lastSnakeSpawn = System.currentTimeMillis();
+			}
+		}
+		
+	}
+
+	public void purgeSnakes() {
+
 	}
 
 	private void initialize() {
@@ -245,6 +274,7 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		snakes.clear();
 		bugs.bugs.clear();
+		walls.items.clear();
 		
 		gameOver = 0;
 		
@@ -304,6 +334,7 @@ public class GameSnakeBoard extends SnakeBoard {
 				startGameBattle();
 				break;
 			case GAMEMODE_SURVIVAL:
+				startGameSurvival();
 				break;
 			default:
 				break;
@@ -377,7 +408,8 @@ public class GameSnakeBoard extends SnakeBoard {
 	private void startGameSolo() {
 		bugs.spawnBug(Snake.RACE_PLAYER);
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
-		snakes.get(0).live = 1;
+		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
+		snakes.get(0).live = 1;		
 	}
 	
 	private void startGameBattle() {
@@ -387,25 +419,58 @@ public class GameSnakeBoard extends SnakeBoard {
 		bugs.spawnBug(Snake.RACE_ENEMY3);
 		
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
+		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
+		snakes.get(0).currentCmd = Snake.CMD_UP;
 		snakes.get(0).live = 1;
 		
-		Snake foeSnake = new Snake(10,10, this);
+		Snake foeSnake = new Snake(5,10, this);
 		foeSnake.race = Snake.RACE_ENEMY1;
 		foeSnake.live = 1;
 		
 		snakes.add(foeSnake);
+		snakes.get(1).body.grow(SnakeBug.BUG_TRIPPLE);
 		
 		Snake foeSnake2 = new Snake(15,15, this);
 		foeSnake2.race = Snake.RACE_ENEMY2;
 		foeSnake2.live = 1;
 		
 		snakes.add(foeSnake2);
+		snakes.get(2).body.grow(SnakeBug.BUG_TRIPPLE);
 		
 		Snake foeSnake3 = new Snake(5,5, this);
 		foeSnake3.race = Snake.RACE_ENEMY3;
 		foeSnake3.live = 1;
 		
 		snakes.add(foeSnake3);
+		snakes.get(3).body.grow(SnakeBug.BUG_TRIPPLE);
+		
+		int yMid = (int)(cnVertical / 2);
+		
+		walls.addBlock(cnHorizontal, yMid, Block.BLOCK_KEYHOLE);
+		walls.addBlock(cnHorizontal, yMid - 1, Block.BLOCK_KEYHOLE);
+		walls.addBlock(cnHorizontal, yMid + 1, Block.BLOCK_KEYHOLE);
+		walls.addBlock(cnHorizontal, yMid - 2, Block.BLOCK_WALL);
+		walls.addBlock(cnHorizontal, yMid + 2, Block.BLOCK_WALL);		
+	}
+	
+	private void startGameSurvival() {
+		
+		lastSnakeSpawn = System.currentTimeMillis();
+		
+		bugs.spawnBug(Snake.RACE_PLAYER);
+		bugs.spawnBug(Snake.RACE_ENEMY1);
+		
+		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
+		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
+		snakes.get(0).currentCmd = Snake.CMD_UP;
+		snakes.get(0).live = 1;
+		
+		Snake foeSnake = new Snake(3,10, this);
+		foeSnake.race = Snake.RACE_ENEMY1;
+		foeSnake.live = 1;
+		
+		snakes.add(foeSnake);
+		snakes.get(1).body.grow(SnakeBug.BUG_TRIPPLE);
 	}
 
 	public void processTouch(MotionEvent event) {
