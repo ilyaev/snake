@@ -125,6 +125,11 @@ public class StartSnakeBoard extends SnakeBoard {
 		sWidth = canvas.getWidth();
 		sHeight = canvas.getHeight();
 		
+//		sWidth = 320;
+//		sHeight = 480;
+		
+		walls = new BlockList(this);
+		
 		bugs.darkRedPaint = bugs.redPaint;
 		
 		cnHorizontal = MIN_CELLS_NUMBER;
@@ -279,37 +284,39 @@ public class StartSnakeBoard extends SnakeBoard {
 	}
 	
 	public void initButtons() {
-		int shiftX = 110;
-		int shiftY = 300;
 		
-		int bHeight = 70;
-		int bWidth = 250;
+		
+		int bHeight = (int) sHeight / 9;
+		int bWidth = (int) (sWidth / 1.4);
+		
+		int shiftX = (sWidth - bWidth) / 2;
+		int shiftY = (sHeight - (bHeight * 3) +  ((sHeight / 40) * 2)) / 2 ;
 		
 		Button btn = new Button("SOLO");
 		btn.setPosition(shiftX, shiftY);
 		
 		btn.setSize(bWidth, bHeight);
-		btn.setFontSize(40);
+		btn.setFontSize(bHeight - 30);
 		btn.setAction(StartSnakeBoard.ACTION_SOLO);		
 		buttons.add(btn);
 		
-		shiftY += bHeight + 20;
+		shiftY += bHeight + (int) sHeight / 40;
 		
-		btn = new Button("BATTLE");
+		btn = new Button("ESCAPE");
 		
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
-		btn.setFontSize(40);
+		btn.setFontSize(bHeight - 30);
 		btn.setAction(StartSnakeBoard.ACTION_BATTLE);	
 		buttons.add(btn);
 		
-		shiftY += bHeight + 20;
+		shiftY += bHeight + (int) sHeight / 40;
 		
 		btn = new Button("SURVIVAL");
 		
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
-		btn.setFontSize(40);
+		btn.setFontSize(bHeight - 30);
 		btn.setAction(StartSnakeBoard.ACTION_SURVIVAL);	
 		buttons.add(btn);		
 	}

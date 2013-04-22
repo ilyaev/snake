@@ -37,7 +37,7 @@ public class SnakeBugList {
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
 			
-			if (r.nextInt(100) <= 7) {
+			if (r.nextInt(100) <= 4) {
 				bug.type = SnakeBug.BUG_SCORE;
 			}
 			
@@ -45,16 +45,16 @@ public class SnakeBugList {
 				bug.type = SnakeBug.BUG_MUSHROOM;
 			}
 			
-			if (r.nextInt(100) <= 10) {
+			if (r.nextInt(100) <= 15) {
 				bug.type = SnakeBug.BUG_TRIPPLE;
 			}
 			
-			if (r.nextInt(100) <= 15) {
+			if (r.nextInt(100) <= 20) {
 				bug.maxIterations = 60;
 				bug.iteration = 60;
 				bug.type = SnakeBug.BUG_CHERRY;
 			}
-			
+
 			bug.setRace(race);			
 			bugs.add(bug);
 		}
@@ -90,7 +90,7 @@ public class SnakeBugList {
 			for(int i = 0 ; i < board.snakes.size() ; i++) {
 				if (bug.cellX == board.snakes.get(i).snakeX && bug.cellY == board.snakes.get(i).snakeY && bug.active == 1) {
 					bug.active = 0;
-					bug.eatenBy = bug.type == SnakeBug.BUG_SCORE ? -1 : board.snakes.get(i).race;
+					bug.eatenBy = board.snakes.get(i).race;
 					toRemove.add(bug);					
 					board.snakes.get(i).path.clear();
 					if (bug.type == SnakeBug.BUG_SCORE) {
@@ -122,6 +122,11 @@ public class SnakeBugList {
 						board.getSnakeByRace(bug.eatenBy).score += 5; 
 						board.getSnakeByRace(bug.race).body.shrink(bug.type);
 					}
+					
+					if (bug.type == SnakeBug.BUG_SCORE && bug.eatenBy == Snake.RACE_PLAYER) {
+						board.unlockKeyHole(bug.cellX, bug.cellY);
+					}
+					
 				}				
 			}
 		}

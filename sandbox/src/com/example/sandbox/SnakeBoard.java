@@ -57,7 +57,7 @@ public class SnakeBoard {
 	
 	boolean oMap[][];
 	
-	public Canvas canvas;
+	public Canvas canvas = null;
 	
 	long lastTimeStamp = 0;
 
@@ -111,12 +111,14 @@ public class SnakeBoard {
 		
 		if (walls != null && walls.items.size() > 0) {
 			for(int i = 0 ; i < walls.items.size() ; i++) {
-				oMap[walls.items.get(i).x][walls.items.get(i).y] = true;
+				if (walls.items.get(i).type != Block.BLOCK_EXIT) {
+					oMap[walls.items.get(i).x][walls.items.get(i).y] = true;
+				}
 			}
 		}
 	}	
 	
-	public void makeBoom(float x, float y) {
+	public void makeBoom(float x, float y, Paint bPaint) {
 		if (booms == null) {
 			booms = new ArrayList<ParticleList>();
 		}
@@ -125,6 +127,9 @@ public class SnakeBoard {
 		
 		for(int i = 0 ; i < 30 ; i++) {			
 			Particle particle = new Particle(x, y);
+			if (bPaint != null) {
+				particle.paint = bPaint;
+			}				
 			particle.setXYDestination((float)Math.random() * sWidth, (float)Math.random() * sHeight, 30);
 			particles.add(particle);
 		}		
@@ -161,6 +166,28 @@ public class SnakeBoard {
 				snakes.remove(toRemove.get(i));
 			}
 		}
+	}
+
+	public void unlockKeyHole(int cellX, int cellY) {
+		Block block = walls.unlockFirstLockedSlot();		
+		if (block != null) {
+			
+		}
+	}
+
+	public void blowUpLocks() {
+		for(int i = 0 ; i < walls.items.size() ; i++) {
+			if (walls.items.get(i).type == Block.BLOCK_KEYHOLE) {
+				walls.currLocks -= 1;
+				walls.totalLocks -= 1;
+				walls.items.get(i).type = Block.BLOCK_EXIT;
+				
+				makeBoom(getCellCenterX(walls.items.get(i).x), getCellCenterY(walls.items.get(i).y), walls.items.get(i).starPaint);
+				
+			}
+		}
+		
+		rebuildObstMap();		
 	}
 	
 	

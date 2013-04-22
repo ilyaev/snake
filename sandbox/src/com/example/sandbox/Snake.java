@@ -264,8 +264,18 @@ public class Snake {
 	}
 
 	public void deactivateSnake() {		
+		
+		if (active == 1 && race != RACE_PLAYER) {
+			if (board.snakes.get(0).active == 1) {
+				board.snakes.get(0).score += 100;
+				board.snakes.get(0).kills += 1;		
+				board.walls.unlockFirstLockedSlot();
+			}
+		}
+		
 		active = 0;		
 		currentCmd = 0;
+		
 		for(int i = 0 ; i < body.items.size(); i++) {		
 			body.items.get(i).maxIterations = 60;
 			body.items.get(i).setTarget((int)(Math.random() * board.cnHorizontal + 1), (int)(Math.random() * board.cnVertical + 1));
@@ -276,11 +286,6 @@ public class Snake {
 			board.gameOverCountdown = System.currentTimeMillis();
 			board.funnyText = "\"" + board.quote.nextQuote() + "\"\n\n" + board.quote.nextAuthor();
 			board.gameOver = 1;
-		} else {
-			if (board.snakes.get(0).active == 1) {
-				board.snakes.get(0).score += 100;
-				board.snakes.get(0).kills += 1;
-			}
 		}
 		
 		SnakeBug bug = board.bugs.getBugByRace(race); 

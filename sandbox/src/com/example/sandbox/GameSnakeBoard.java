@@ -49,6 +49,7 @@ public class GameSnakeBoard extends SnakeBoard {
 	Paint funnyTextPaint;
 
 	public GameSnakeBoard(SnakeBoxSurface tSurface) {
+	
 		surface = tSurface;
 		bugs = new SnakeBugList(this);
 		snakes = new ArrayList<Snake>();
@@ -56,12 +57,10 @@ public class GameSnakeBoard extends SnakeBoard {
 		quote = new Quote();
 		
 		textPaint = new Paint();
-		textPaint.setARGB(255, 255, 255, 255);
-		textPaint.setTextSize(spHeight - 2);
+		textPaint.setARGB(255, 255, 255, 255);		
 		
 		scorePaint = new Paint();
-		scorePaint.setARGB(255, 255, 255, 255);
-		scorePaint.setTextSize(80);
+		scorePaint.setARGB(255, 255, 255, 255);		
 		
 		btnReplay = new Button("AGAIN");
 		btnMenu = new Button("MENU");	
@@ -90,31 +89,35 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 
 	public void draw(Canvas tCanvas) {
-		canvas = tCanvas;		
-		canvas.drawRGB(0, 0, 0);
-		
-		if (gameOver != 1) {
-			drawControlPanel();
-			drawScorePanel();
-		}		
-		
-		
-		for(int i = 0 ; i < snakes.size() ; i++) {
-			snakes.get(i).draw();
-		}
-		
-		if (booms != null) {
-			for(int i = 0 ; i < booms.size() ; i++) {
-				booms.get(i).draw(tCanvas);
+		try {
+			canvas = tCanvas;		
+			canvas.drawRGB(0, 0, 0);
+			
+			if (gameOver != 1) {
+				drawControlPanel();
+				drawScorePanel();
+			}		
+			
+			
+			for(int i = 0 ; i < snakes.size() ; i++) {
+				snakes.get(i).draw();
 			}
-		}
-		
-		bugs.draw(canvas);
-		
-		walls.draw(canvas);
-		
-		if (gameOver == 1) {
-			drawGameOver();
+			
+			if (booms != null) {
+				for(int i = 0 ; i < booms.size() ; i++) {
+					booms.get(i).draw(tCanvas);
+				}
+			}
+			
+			bugs.draw(canvas);
+			
+			walls.draw(canvas);
+			
+			if (gameOver == 1) {
+				drawGameOver();
+			}
+		} finally {
+			
 		}
 	}
 	
@@ -149,47 +152,53 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 	
 	private int getScore() {
-		return (snakes.get(0).body.items.size() - 1) * 10 + snakes.get(0).score;
+		int r = 0;
+		try {
+			r = (snakes.get(0).body.items.size() - 1) * 10 + snakes.get(0).score;
+		} finally {};
+		
+		return r;
 	}
 
 	private void drawScorePanel() {
-		canvas.drawText("Score: " + Integer.toString(getScore()), 0, spHeight, textPaint);
-		canvas.drawText("Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1), 150, spHeight, textPaint);
-		canvas.drawText("Kills: " + Integer.toString(snakes.get(0).kills), 270, spHeight, textPaint);
+		canvas.drawText("Score: " + Integer.toString(getScore()) + "     Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1), 0, spHeight, textPaint);
 	}
 	
 	private void drawControlPanel() {		
-		canvas.drawRect(btnLeft, whiteFramePaint);
-		canvas.drawRect(btnRight, whiteFramePaint);
-		
-		canvas.drawRect(btnUp, whiteFramePaint);
-		canvas.drawRect(btnDown, whiteFramePaint);	
-		
-		
-		if (btnLeftState == MotionEvent.ACTION_DOWN || btnLeftState == MotionEvent.ACTION_MOVE) {
-			canvas.drawPath(bPathLeft, buttonPressedPaint);
+		if (canvas == null || btnLeft == null || whiteFramePaint == null) {
+			// error!
 		} else {
-			canvas.drawPath(bPathLeft, whiteFramePaint);
+			canvas.drawRect(btnLeft, whiteFramePaint);
+			canvas.drawRect(btnRight, whiteFramePaint);
+			
+			canvas.drawRect(btnUp, whiteFramePaint);
+			canvas.drawRect(btnDown, whiteFramePaint);	
+			
+			
+			if (btnLeftState == MotionEvent.ACTION_DOWN || btnLeftState == MotionEvent.ACTION_MOVE) {
+				canvas.drawPath(bPathLeft, buttonPressedPaint);
+			} else {
+				canvas.drawPath(bPathLeft, whiteFramePaint);
+			}
+			
+			if (btnRightState == MotionEvent.ACTION_DOWN || btnRightState == MotionEvent.ACTION_MOVE) {
+				canvas.drawPath(bPathRight, buttonPressedPaint);
+			} else {
+				canvas.drawPath(bPathRight, whiteFramePaint);
+			}
+			
+			if (btnUpState == MotionEvent.ACTION_DOWN || btnUpState == MotionEvent.ACTION_MOVE) {
+				canvas.drawPath(bPathUp, buttonPressedPaint);
+			} else {
+				canvas.drawPath(bPathUp, whiteFramePaint);
+			}
+			
+			if (btnDownState == MotionEvent.ACTION_DOWN || btnDownState == MotionEvent.ACTION_MOVE) {
+				canvas.drawPath(bPathDown, buttonPressedPaint);
+			} else {
+				canvas.drawPath(bPathDown, whiteFramePaint);
+			}
 		}
-		
-		if (btnRightState == MotionEvent.ACTION_DOWN || btnRightState == MotionEvent.ACTION_MOVE) {
-			canvas.drawPath(bPathRight, buttonPressedPaint);
-		} else {
-			canvas.drawPath(bPathRight, whiteFramePaint);
-		}
-		
-		if (btnUpState == MotionEvent.ACTION_DOWN || btnUpState == MotionEvent.ACTION_MOVE) {
-			canvas.drawPath(bPathUp, buttonPressedPaint);
-		} else {
-			canvas.drawPath(bPathUp, whiteFramePaint);
-		}
-		
-		if (btnDownState == MotionEvent.ACTION_DOWN || btnDownState == MotionEvent.ACTION_MOVE) {
-			canvas.drawPath(bPathDown, buttonPressedPaint);
-		} else {
-			canvas.drawPath(bPathDown, whiteFramePaint);
-		}
-
 	}
 
 	public void calculate(Canvas tCanvas) {
@@ -211,6 +220,8 @@ public class GameSnakeBoard extends SnakeBoard {
 			lastTimeStamp += timeDiff;
 			
 			bugs.processIntercection();
+			
+			checkExit();
 		}
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
@@ -250,31 +261,60 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 	}
 
-	public void purgeSnakes() {
+	private void checkExit() {
+		boolean isExit = false;
+		for(int i = 0 ; i < walls.items.size() ; i++) {
+			if (walls.items.get(i).type == Block.BLOCK_EXIT && walls.items.get(i).x == snakes.get(0).snakeX && walls.items.get(i).y == snakes.get(0).snakeY) {
+				isExit = true;
+				break;
+			}
+		}
 
+		if (isExit == true && gameOver == 0) {
+			snakes.get(0).currentCmd = 0;
+			snakes.get(0).live = 0;
+			gameOverCountdown = System.currentTimeMillis();
+			funnyText = " \n ";
+			gameOver = 1;
+			for(int i = 0 ; i < snakes.get(0).body.items.size() ; i++) {
+				snakes.get(0).body.items.get(i).iteration = 0;
+				snakes.get(0).body.items.get(i).maxIterations = 60;
+				snakes.get(0).body.items.get(i).doShrink = 1;
+			}
+		}
 	}
-
+	
 	private void initialize() {
 		sWidth = canvas.getWidth();
 		sHeight = canvas.getHeight();
 		
-		btnReplay.setPosition(1, sHeight - 105);
-		btnReplay.setSize(sWidth / 2 - 5, 100);		
-		btnReplay.setFontSize(40);
+//		sWidth = 320;
+//		sHeight = 480;
 		
-		btnMenu.setPosition(sWidth / 2 + 5, sHeight - 105);
-		btnMenu.setSize(sWidth / 2 - 10, 100);
-		btnMenu.setFontSize(40);
+		cpHeight = (int) (sHeight / 4.210);
+		spHeight = (int)(sHeight / 26.66666);
+		
+		textPaint.setTextSize(spHeight - 2);
+		scorePaint.setTextSize(sHeight / 10);
+		
+		btnReplay.setPosition(1, sHeight - (int)(sHeight / 7.61));
+		btnReplay.setSize(sWidth / 2 - 5, sHeight / 8);		
+		btnReplay.setFontSize(sHeight / 20);
+		
+		btnMenu.setPosition(sWidth / 2 + 5, sHeight - (int)(sHeight / 7.61));
+		btnMenu.setSize(sWidth / 2 - 10, sHeight / 8);
+		btnMenu.setFontSize(sHeight / 20);
 		
 		funnyTextPaint = new Paint();
 		funnyTextPaint = new Paint();
 		funnyTextPaint.setARGB(255, 255, 255, 255);
-		funnyTextPaint.setTextSize(25);		
+		funnyTextPaint.setTextSize(sHeight / 32);		
 		
 		
 		snakes.clear();
 		bugs.bugs.clear();
 		walls.items.clear();
+		walls.reset();
 		
 		gameOver = 0;
 		

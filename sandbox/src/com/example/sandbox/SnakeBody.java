@@ -127,7 +127,7 @@ public class SnakeBody {
 	public void shrink(int bugType) {
 		if (items.size() > 2) {
 			SnakePiece piece = items.get(items.size()  -  1);
-			board.makeBoom(piece.x, piece.y);
+			board.makeBoom(piece.x, piece.y, null);
 			items.get(items.size()  -  1).active = 0;
 			items.remove(items.size() - 1);
 			lastIndex -= 1;			
@@ -135,7 +135,7 @@ public class SnakeBody {
 		
 		if (items.size() > 2 && (bugType == SnakeBug.BUG_TRIPPLE || bugType == SnakeBug.BUG_CHERRY)) {
 			SnakePiece piece = items.get(items.size()  -  1);
-			board.makeBoom(piece.x, piece.y);
+			board.makeBoom(piece.x, piece.y, null);
 			items.get(items.size()  -  1).active = 0;
 			items.remove(items.size() - 1);
 			lastIndex -= 1;			
@@ -143,7 +143,7 @@ public class SnakeBody {
 		
 		if (items.size() > 2 && bugType == SnakeBug.BUG_TRIPPLE) {
 			SnakePiece piece = items.get(items.size()  -  1);
-			board.makeBoom(piece.x, piece.y);
+			board.makeBoom(piece.x, piece.y, null);
 			items.get(items.size()  -  1).active = 0;
 			items.remove(items.size() - 1);
 			lastIndex -= 1;			
