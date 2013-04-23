@@ -37,13 +37,13 @@ public class SnakeBugList {
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
 			
-			if (r.nextInt(100) <= 4) {
-				bug.type = SnakeBug.BUG_SCORE;
-			}
-			
 			if (r.nextInt(100) <= 5) {
 				bug.type = SnakeBug.BUG_MUSHROOM;
 			}
+			
+			if (r.nextInt(100) <= 7) {
+				bug.type = SnakeBug.BUG_SCORE;
+			}		
 			
 			if (r.nextInt(100) <= 15) {
 				bug.type = SnakeBug.BUG_TRIPPLE;
@@ -106,6 +106,10 @@ public class SnakeBugList {
 				spawnBug(race);
 				
 				SnakeBug bug = toRemove.get(i);
+				
+				//debug
+				//board.unlockKeyHole(bug.cellX, bug.cellY);
+				//end
 				
 				bugs.remove(toRemove.get(i));
 				

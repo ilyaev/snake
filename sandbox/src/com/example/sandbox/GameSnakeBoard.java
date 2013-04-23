@@ -32,8 +32,7 @@ public class GameSnakeBoard extends SnakeBoard {
 	Paint textPaint;
 	Paint scorePaint;
 	
-	Button btnReplay;
-	Button btnMenu;
+	Button btnReplay, btnNext, btnMenu;
 	
 	Paint fillPaint;
 	
@@ -64,6 +63,7 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		btnReplay = new Button("AGAIN");
 		btnMenu = new Button("MENU");	
+		btnNext = new Button("NEXT");
 		
 		fillPaint = new Paint();
 		fillPaint.setARGB(170, 0,0,0);
@@ -145,7 +145,11 @@ public class GameSnakeBoard extends SnakeBoard {
 			}		
 			
 			if (System.currentTimeMillis() - gameOverCountdown > 3000) {
-				btnReplay.draw(canvas);
+				if (roundWon) {
+					btnNext.draw(canvas);
+				} else {
+					btnReplay.draw(canvas);
+				}
 				btnMenu.draw(canvas);
 			}
 		}
@@ -271,6 +275,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		}
 
 		if (isExit == true && gameOver == 0) {
+			roundWon = true;
+			level += 1;
 			snakes.get(0).currentCmd = 0;
 			snakes.get(0).live = 0;
 			gameOverCountdown = System.currentTimeMillis();
@@ -288,6 +294,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		sWidth = canvas.getWidth();
 		sHeight = canvas.getHeight();
 		
+		roundWon = false;
+		
 //		sWidth = 320;
 //		sHeight = 480;
 		
@@ -300,6 +308,10 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnReplay.setPosition(1, sHeight - (int)(sHeight / 7.61));
 		btnReplay.setSize(sWidth / 2 - 5, sHeight / 8);		
 		btnReplay.setFontSize(sHeight / 20);
+		
+		btnNext.setPosition(1, sHeight - (int)(sHeight / 7.61));
+		btnNext.setSize(sWidth / 2 - 5, sHeight / 8);		
+		btnNext.setFontSize(sHeight / 20);
 		
 		btnMenu.setPosition(sWidth / 2 + 5, sHeight - (int)(sHeight / 7.61));
 		btnMenu.setSize(sWidth / 2 - 10, sHeight / 8);
@@ -449,48 +461,48 @@ public class GameSnakeBoard extends SnakeBoard {
 		bugs.spawnBug(Snake.RACE_PLAYER);
 		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
 		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
-		snakes.get(0).live = 1;		
+		snakes.get(0).live = 1;
+		
+	}
+	
+	public void buildLevel(int level) {
+		String[] parts = SnakeLevels.getLevel(level).split("\\|");
+		String[] sSnakes = parts[0].split(":");
+		String[] sWalls = parts[1].split(":");
+		
+		int curRace = 0;
+		
+		for (int i = 0 ; i < sWalls.length ; i++) {
+			String[] xyt = sWalls[i].split(",");
+			walls.addBlock(Integer.parseInt(xyt[0]), Integer.parseInt(xyt[1]),  Integer.parseInt(xyt[2]));
+		}
+		
+		rebuildObstMap();
+		
+		for(int i =  0 ; i < sSnakes.length ; i++) {
+			String[] xy = sSnakes[i].split(",");
+			
+			bugs.spawnBug(curRace);
+			
+			Snake tSnake = new Snake(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), this);
+			tSnake.race = curRace;
+			tSnake.live = 1;			
+			
+			
+			tSnake.body.grow(SnakeBug.BUG_TRIPPLE);
+			if (curRace == Snake.RACE_PLAYER) {
+				tSnake.currentCmd = Snake.CMD_UP;
+			}
+			
+			snakes.add(tSnake);
+			curRace += 1;
+		}
+		
+		
 	}
 	
 	private void startGameBattle() {
-		bugs.spawnBug(Snake.RACE_PLAYER);
-		bugs.spawnBug(Snake.RACE_ENEMY1);
-		bugs.spawnBug(Snake.RACE_ENEMY2);
-		bugs.spawnBug(Snake.RACE_ENEMY3);
-		
-		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
-		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
-		snakes.get(0).currentCmd = Snake.CMD_UP;
-		snakes.get(0).live = 1;
-		
-		Snake foeSnake = new Snake(5,10, this);
-		foeSnake.race = Snake.RACE_ENEMY1;
-		foeSnake.live = 1;
-		
-		snakes.add(foeSnake);
-		snakes.get(1).body.grow(SnakeBug.BUG_TRIPPLE);
-		
-		Snake foeSnake2 = new Snake(15,15, this);
-		foeSnake2.race = Snake.RACE_ENEMY2;
-		foeSnake2.live = 1;
-		
-		snakes.add(foeSnake2);
-		snakes.get(2).body.grow(SnakeBug.BUG_TRIPPLE);
-		
-		Snake foeSnake3 = new Snake(5,5, this);
-		foeSnake3.race = Snake.RACE_ENEMY3;
-		foeSnake3.live = 1;
-		
-		snakes.add(foeSnake3);
-		snakes.get(3).body.grow(SnakeBug.BUG_TRIPPLE);
-		
-		int yMid = (int)(cnVertical / 2);
-		
-		walls.addBlock(cnHorizontal, yMid, Block.BLOCK_KEYHOLE);
-		walls.addBlock(cnHorizontal, yMid - 1, Block.BLOCK_KEYHOLE);
-		walls.addBlock(cnHorizontal, yMid + 1, Block.BLOCK_KEYHOLE);
-		walls.addBlock(cnHorizontal, yMid - 2, Block.BLOCK_WALL);
-		walls.addBlock(cnHorizontal, yMid + 2, Block.BLOCK_WALL);		
+		buildLevel(level);	
 	}
 	
 	private void startGameSurvival() {

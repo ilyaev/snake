@@ -11,6 +11,8 @@ public class SnakeBoard {
 	
 	SnakeBoxSurface surface;
 	
+	int level = 1;
+	
 	final static int GAMEMODE_SOLO = 1;
 	final static int GAMEMODE_BATTLE = 2;
 	final static int GAMEMODE_SURVIVAL = 3;
@@ -21,6 +23,8 @@ public class SnakeBoard {
 
 	public int sWidth;
 	public int sHeight;
+	
+	boolean roundWon = false;
 	
 	Quote quote;
 	String funnyText;

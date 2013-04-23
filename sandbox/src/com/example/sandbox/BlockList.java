@@ -53,7 +53,6 @@ public class BlockList {
 	
 	public Block unlockFirstLockedSlot() {		
 		Block result = null;
-		Log.v("SNAKE", "UNLOCK LOCK");
 		if (items.size() > 0) {
 			for(int i = 0 ; i < items.size() ; i++) {
 				if (items.get(i).type == Block.BLOCK_KEYHOLE && items.get(i).isUnlocked == false) {

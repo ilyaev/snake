@@ -1,0 +1,106 @@
+<html>
+<title>Map Editor</title>
+
+<input type="button" value="Clear" onClick="clearMap()">
+<input type="button" value="Generate" onClick="generateMap()">
+<input type="text" size=92 id="map_src">
+<script language="JavaScript">
+
+var cW = 20;
+var cH = 24;
+
+
+function generateMap() {
+  var pSnake = '';
+  var fSnakes = [];
+  var walls = [];
+  for(var y = 1; y <= cH ; y++) {
+	for(var x = 1 ; x <= cW ; x++) {
+	  var id = x + '_' + y;
+	  var el = document.getElementById(id);
+	  if (el) {
+	  	var key = el.innerHTML;
+	  	if (key == 'P') {
+	  	  pSnake = x + ',' + y;
+	  	}
+	  	if (key == 'F') {
+	  	 fSnakes.push(x + ',' + y);
+	  	}
+	  	
+	  	if (key == 'W') {
+	  	 walls.push(x + ',' + y + ',1');
+	  	}
+	  	
+	  	if (key == 'E') {
+	  	 walls.push(x + ',' + y + ',2');
+	  	}
+	  }
+	 }
+   }
+   
+   if (pSnake == '') {
+    alert('No player snake set');
+    return;
+   }  
+   
+   var result = pSnake + ':' + fSnakes.join(':') + '|' + walls.join(':');
+   document.getElementById('map_src').value = result;
+   
+}
+
+function clearMap() {
+ document.getElementById('map_src').value = '';
+ for(var y = 1; y <= cH ; y++) {
+	for(var x = 1 ; x <= cW ; x++) {
+	  var id = x + '_' + y;
+	  var el = document.getElementById(id);
+	  if (el) {
+	  	el.innerHTML = '&nbsp';
+	  	el.style.backgroundColor = "black";
+	  }
+	}
+ } 
+}
+
+function processClick(tdObj) {
+ 
+ var curVal = tdObj.innerHTML;
+ 
+ if (curVal == '&nbsp;') {
+  tdObj.innerHTML = 'W';
+  tdObj.style.backgroundColor = 'white';
+ } else if (curVal == 'W') {
+   tdObj.innerHTML = 'E';
+   tdObj.style.backgroundColor = 'gray';
+ } else if (curVal == 'E') {
+   tdObj.innerHTML = 'F';
+   tdObj.style.backgroundColor = '#00aa00';
+ } else if (curVal == 'F') {
+   tdObj.innerHTML = 'P';
+   tdObj.style.backgroundColor = '#00FF00';
+ } else if (curVal == 'P') {
+   tdObj.innerHTML = '&nbsp;';
+   tdObj.style.backgroundColor = 'black';
+ }
+  
+}
+
+
+
+var table = "<table border=1 cellspacing=0 cellpadding=0>";
+for(var y = 1; y <= cH ; y++) {
+    var row = "<tr>";
+	for(var x = 1 ; x <= cW ; x++) {
+	  var id = x + '_' + y;
+	  var td = "<td style='cursor:pointer; background-color:#000000' align=center width=25 height=25 id='" + id + "' onclick='processClick(this)'>&nbsp;</td>";
+	  row += td;
+	}
+	row += "</tr>";
+	table += row;
+}
+table += "</table>";
+
+document.write(table);
+
+
+</script>

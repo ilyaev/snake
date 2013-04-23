@@ -1,6 +1,7 @@
 package com.example.sandbox;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -64,8 +65,7 @@ public class Block {
 			starPath.lineTo(centerX + starE.get(0).x, centerY + starE.get(0).y);
 		}
 		
-		
-		float halfSize = board.cellSizePx / 2;
+		float halfSize = board.cellSizePx / 2 - 1;
 		
 		switch (type) {
 		case BLOCK_WALL:
