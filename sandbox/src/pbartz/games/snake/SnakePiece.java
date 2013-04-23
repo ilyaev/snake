@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

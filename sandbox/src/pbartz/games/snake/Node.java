@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 public class Node implements Comparable<Node> {
 	int x;

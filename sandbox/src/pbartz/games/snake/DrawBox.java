@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,9 +8,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnTouchListener;
 
-public class SnakeBox extends Activity implements OnTouchListener {
+public class DrawBox extends Activity implements OnTouchListener {
 
-	private SnakeBoxSurface aSurfaceView;
+	private DrawBoxSurface aSurfaceView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,18 +19,9 @@ public class SnakeBox extends Activity implements OnTouchListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
-		aSurfaceView = new SnakeBoxSurface(this);
+		aSurfaceView = new DrawBoxSurface(this);
 		aSurfaceView.setOnTouchListener(this);
 		setContentView(aSurfaceView);		
-	}
-
-	@Override
-	public void onBackPressed() {
-		if (aSurfaceView.board == aSurfaceView.gameBoard) {
-			aSurfaceView.setBoard(aSurfaceView.startBoard);
-		} else {
-			super.onBackPressed();
-		}
 	}
 
 	@Override
@@ -47,7 +38,7 @@ public class SnakeBox extends Activity implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		aSurfaceView.board.processTouch(event);
+		aSurfaceView.addParticle(event.getX(), event.getY());
 		return true;
 	}	
 	

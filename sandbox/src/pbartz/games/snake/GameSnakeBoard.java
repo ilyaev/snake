@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 import java.util.ArrayList;
 import java.util.Random;

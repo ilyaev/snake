@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import pbartz.games.snake.R;
 
 public class First extends Activity implements OnClickListener {
 

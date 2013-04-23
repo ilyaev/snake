@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import pbartz.games.snake.R;
 
 
 public class StartScreen extends ListActivity {
@@ -29,7 +30,7 @@ public class StartScreen extends ListActivity {
 
 		try {
 			@SuppressWarnings("rawtypes")
-			Class runClass = Class.forName("com.example.sandbox." + menuOptions[position]);
+			Class runClass = Class.forName("pbartz.games.snake." + menuOptions[position]);
 			Intent runIntent = new Intent(StartScreen.this, runClass);
 			startActivity(runIntent);
 		} catch (ClassNotFoundException e) {

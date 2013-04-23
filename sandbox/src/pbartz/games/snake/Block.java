@@ -1,4 +1,4 @@
-package com.example.sandbox;
+package pbartz.games.snake;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,7 +15,6 @@ public class Block {
 	static final int BLOCK_EXIT = 3;
 	
 	int x,y, type;
-	
 	Paint paint, blackPaint;
 	private ArrayList<Point> starE;
 	private Path starPath;
