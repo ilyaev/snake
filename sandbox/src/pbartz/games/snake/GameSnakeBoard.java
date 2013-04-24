@@ -3,10 +3,13 @@ package pbartz.games.snake;
 import java.util.ArrayList;
 import java.util.Random;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.view.MotionEvent;
 
 public class GameSnakeBoard extends SnakeBoard {
@@ -47,6 +50,8 @@ public class GameSnakeBoard extends SnakeBoard {
 	
 	Paint funnyTextPaint;
 
+	private Button btnRate;
+
 	public GameSnakeBoard(SnakeBoxSurface tSurface) {
 	
 		surface = tSurface;
@@ -64,6 +69,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnReplay = new Button("AGAIN");
 		btnMenu = new Button("MENU");	
 		btnNext = new Button("NEXT");
+		
+		btnRate = new Button("RATE APP");
 		
 		fillPaint = new Paint();
 		fillPaint.setARGB(170, 0,0,0);
@@ -152,6 +159,10 @@ public class GameSnakeBoard extends SnakeBoard {
 				}
 				btnMenu.draw(canvas);
 			}
+			
+			if (System.currentTimeMillis() - gameOverCountdown > 5000) {
+				btnRate.draw(canvas);
+			}
 		}
 	}
 	
@@ -165,7 +176,13 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 
 	private void drawScorePanel() {
-		canvas.drawText("Score: " + Integer.toString(getScore()) + "     Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1), 0, spHeight, textPaint);
+		String txt = "Score: " + Integer.toString(getScore()) + "     Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1);
+		
+		if (gameMode == GAMEMODE_BATTLE) {
+			txt += "  Level: " + Integer.toString(level) + "/" + Integer.toString(SnakeLevels.levels.length);
+		}
+		
+		canvas.drawText(txt, 0, spHeight, textPaint);
 	}
 	
 	private void drawControlPanel() {		
@@ -263,6 +280,8 @@ public class GameSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		walls.calculate();
+		
 	}
 
 	private void checkExit() {
@@ -276,7 +295,16 @@ public class GameSnakeBoard extends SnakeBoard {
 
 		if (isExit == true && gameOver == 0) {
 			roundWon = true;
+			
 			level += 1;
+
+			if (level > SnakeLevels.levels.length) {
+				// game over real
+				level = 1;
+			}
+			
+			surface.saveState();
+			
 			snakes.get(0).currentCmd = 0;
 			snakes.get(0).live = 0;
 			gameOverCountdown = System.currentTimeMillis();
@@ -317,7 +345,11 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnMenu.setSize(sWidth / 2 - 10, sHeight / 8);
 		btnMenu.setFontSize(sHeight / 20);
 		
-		funnyTextPaint = new Paint();
+		
+		btnRate.setPosition(sWidth / 4, sHeight - (sHeight / 8)*3);
+		btnRate.setSize(sWidth / 2 - 5, sHeight / 8);
+		btnRate.setFontSize(sHeight / 20);
+		
 		funnyTextPaint = new Paint();
 		funnyTextPaint.setARGB(255, 255, 255, 255);
 		funnyTextPaint.setTextSize(sHeight / 32);		
@@ -498,6 +530,7 @@ public class GameSnakeBoard extends SnakeBoard {
 			curRace += 1;
 		}
 		
+		walls.placeAllWalls(this);		
 		
 	}
 	
@@ -531,7 +564,15 @@ public class GameSnakeBoard extends SnakeBoard {
 				state = SnakeBoard.NOT_INITED;
 			} else if (btnMenu.rect.contains((int)event.getX(), (int)event.getY())) {
 				surface.setBoard(surface.startBoard);
-			};			
+			} else if (btnRate.rect.contains((int)event.getX(), (int)event.getY())) {
+				Uri uri = Uri.parse("market://details?id=" + surface.sContext.getPackageName());
+			    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+			    try {
+			    	surface.sContext.startActivity(goToMarket);
+			    } catch (ActivityNotFoundException e) {
+			       
+			    }
+			}
 		} else {
 			
 			btnRightState = -1;
@@ -551,7 +592,17 @@ public class GameSnakeBoard extends SnakeBoard {
 			} else if (btnDown.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_UP) {
 				btnDownState = event.getAction();
 				snakes.get(0).setCommand(Snake.CMD_DOWN);
-			}
+			} 
+//			else {
+//				if (event.getAction() == MotionEvent.ACTION_UP) {
+//					level += 1;
+//					if (level > SnakeLevels.levels.length) {
+//						level = 1;						
+//					}
+//					surface.saveState();
+//					state = NOT_INITED;
+//				}
+//			}
 		}
 	}
 	

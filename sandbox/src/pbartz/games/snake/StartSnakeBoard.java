@@ -296,7 +296,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		btn.setPosition(shiftX, shiftY);
 		
 		btn.setSize(bWidth, bHeight);
-		btn.setFontSize((int)(bHeight - (bHeight / 26.6666)));
+		btn.setFontSize((int)(bHeight - (sHeight / 26.6666)));
 		btn.setAction(StartSnakeBoard.ACTION_SOLO);		
 		buttons.add(btn);
 		
@@ -306,7 +306,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
-		btn.setFontSize((int)(bHeight - (bHeight / 26.6666)));
+		btn.setFontSize((int)(bHeight - (sHeight / 26.6666)));
 		btn.setAction(StartSnakeBoard.ACTION_BATTLE);	
 		buttons.add(btn);
 		
@@ -316,7 +316,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		btn.setPosition(shiftX, shiftY);
 		btn.setSize(bWidth, bHeight);
-		btn.setFontSize((int)(bHeight - (bHeight / 26.6666)));
+		btn.setFontSize((int)(bHeight - (sHeight / 26.6666)));
 		btn.setAction(StartSnakeBoard.ACTION_SURVIVAL);	
 		buttons.add(btn);		
 	}

@@ -51,6 +51,22 @@ public class BlockList {
 		}
 	}
 	
+	public void calculate() {
+		if (items.size() > 0) {
+			for(int i = 0 ; i < items.size() ; i++) {
+				items.get(i).calculate();
+			}
+		}
+	}
+	
+	public void placeAllWalls(SnakeBoard board) {
+		if (items.size() > 0) {
+			for(int i = 0 ; i < items.size() ; i++) {
+				items.get(i).animatePlacement(board);
+			}
+		}
+	}
+	
 	public Block unlockFirstLockedSlot() {		
 		Block result = null;
 		if (items.size() > 0) {

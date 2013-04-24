@@ -3,12 +3,59 @@
 
 <input type="button" value="Clear" onClick="clearMap()">
 <input type="button" value="Generate" onClick="generateMap()">
-<input type="text" size=92 id="map_src">
+<input type="text" size=92 id="map_src"> <input type="button" value="Apply" onclick="applyMap()"  >
 <script language="JavaScript">
 
 var cW = 20;
 var cH = 24;
 
+
+function applyMap() {
+	clearMap();
+	var s = document.getElementById('map_src').value;
+	if (!s.trim()) return;
+	
+	var parts = s.split('|');
+	var snakes = parts[0].split(':');
+	var walls = parts[1].split(':');
+	
+	for(var i = 0 ; i < snakes.length ; i++) {
+		var tmp = snakes[i].split(',');
+		
+		var id = tmp[0] + '_' + tmp[1];
+		var el = document.getElementById(id);
+		
+		if (el) {
+		  if (i == 0) {
+		  	el.style.backgroundColor = '#00FF00'
+		  	el.innerHTML = 'P';
+		  } else {
+		  	el.style.backgroundColor = '#00aa00';
+		  	el.innerHTML = 'F';
+		  }
+		}
+	}
+	
+	for(var i = 0 ; i < walls.length ; i++) {
+	 	var tmp = walls[i].split(',');
+		
+		var id = tmp[0] + '_' + tmp[1];
+		var el = document.getElementById(id);
+		
+		if (el) {
+			if (tmp[2] == 1) {
+				el.style.backgroundColor = 'white'
+		  		el.innerHTML = 'W';
+			} else {
+				el.style.backgroundColor = 'gray'
+		  		el.innerHTML = 'E';
+			}
+		}
+	}
+	
+	
+	
+}
 
 function generateMap() {
   var pSnake = '';
@@ -49,7 +96,6 @@ function generateMap() {
 }
 
 function clearMap() {
- document.getElementById('map_src').value = '';
  for(var y = 1; y <= cH ; y++) {
 	for(var x = 1 ; x <= cW ; x++) {
 	  var id = x + '_' + y;

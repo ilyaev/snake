@@ -20,6 +20,12 @@ public class Block {
 	private Path starPath;
 	boolean isUnlocked = false;
 	Paint starPaint;
+	
+	float rx, ry, tx, ty, sx, sy;
+	
+	
+	int maxIterations = 20;
+	int iteration = maxIterations;
 
 	public Block(int tX, int tY, int bType) {
 		x = tX;
@@ -35,6 +41,33 @@ public class Block {
 		starPaint = new Paint();
 		starPaint.setARGB(255, 255, 136, 0);
 		
+	}
+	
+	public void calculate() {
+		if (iteration != maxIterations) {
+			rx += sx;
+			ry += sy;
+			iteration += 1;
+			if (iteration == maxIterations) {
+				rx = 0;
+				ry = 0;
+			}
+		}
+	}
+	
+	public void animatePlacement(SnakeBoard board) {
+		tx = board.getCellCenterX(x);
+		ty = board.getCellCenterY(y);
+		
+		Random r = new Random();
+		
+		rx = r.nextInt(board.sWidth);
+		ry = r.nextInt(board.sHeight);
+		
+		sx = (tx - rx) / maxIterations;
+		sy = (ty - ry) / maxIterations;
+		
+		iteration = 0;
 	}
 	
 	public void draw(Canvas canvas, SnakeBoard board) {
@@ -68,7 +101,11 @@ public class Block {
 		
 		switch (type) {
 		case BLOCK_WALL:
-			canvas.drawRect(board.getCellCenterX(x) - halfSize , board.getCellCenterY(y) - halfSize, board.getCellCenterX(x) + halfSize, board.getCellCenterY(y) + halfSize, paint);
+			if (iteration != maxIterations) {
+				canvas.drawRect(rx - halfSize , ry - halfSize, rx + halfSize, ry + halfSize, paint);
+			} else {
+				canvas.drawRect(board.getCellCenterX(x) - halfSize , board.getCellCenterY(y) - halfSize, board.getCellCenterX(x) + halfSize, board.getCellCenterY(y) + halfSize, paint);
+			}
 			break;
 		case BLOCK_KEYHOLE:
 			canvas.drawRect(board.getCellCenterX(x) - halfSize , board.getCellCenterY(y) - halfSize, board.getCellCenterX(x) + halfSize, board.getCellCenterY(y) + halfSize, paint);

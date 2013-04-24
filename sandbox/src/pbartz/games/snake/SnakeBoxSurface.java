@@ -1,6 +1,7 @@
 package pbartz.games.snake;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -15,16 +16,33 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	SnakeBoard gameBoard = null;
 	SnakeBoard startBoard = null;
 	
+	Context sContext = null;
+	
 	private final static int 	MAX_FPS = 60;
     private final static int	MAX_FRAME_SKIPS = 5;
     private final static int	FRAME_PERIOD = 1000 / MAX_FPS;
 	
 	public SnakeBoxSurface(Context context) {
 		super(context);
+		sContext = context;
 		sHolder = getHolder();
 		gameBoard = new GameSnakeBoard(this);
 		startBoard = new StartSnakeBoard(this);
+		loadState();
 		setBoard(startBoard);
+	}	
+	
+	public void saveState() {
+		SharedPreferences prefs = sContext.getSharedPreferences("pbartz.games.snake", 0);
+		SharedPreferences.Editor editor = prefs.edit();
+		
+		editor.putInt("escape_level", gameBoard.level);		
+		editor.commit();
+	}
+	
+	public void loadState() {
+		SharedPreferences prefs = sContext.getSharedPreferences("pbartz.games.snake", 0);
+		gameBoard.level = prefs.getInt("escape_level", 1);
 	}
 	
 	public void setBoard(SnakeBoard nextBoard) {
