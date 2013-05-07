@@ -19,7 +19,7 @@ public class SnakeBoard {
 	
 	BlockList walls;
 
-	int gameMode = 1;
+	int gameMode = -1;
 
 	public int sWidth;
 	public int sHeight;

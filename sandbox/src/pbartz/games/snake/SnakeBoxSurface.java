@@ -3,6 +3,7 @@ package pbartz.games.snake;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
@@ -17,6 +18,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	SnakeBoard startBoard = null;
 	
 	Context sContext = null;
+	public Typeface mFace;
 	
 	private final static int 	MAX_FPS = 60;
     private final static int	MAX_FRAME_SKIPS = 5;
@@ -24,13 +26,14 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	
 	public SnakeBoxSurface(Context context) {
 		super(context);
+		mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Biotype.ttf");
 		sContext = context;
 		sHolder = getHolder();
 		gameBoard = new GameSnakeBoard(this);
 		startBoard = new StartSnakeBoard(this);
 		loadState();
 		setBoard(startBoard);
-	}	
+	}
 	
 	public void saveState() {
 		SharedPreferences prefs = sContext.getSharedPreferences("pbartz.games.snake", 0);

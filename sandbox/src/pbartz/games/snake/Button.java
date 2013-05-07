@@ -3,6 +3,7 @@ package pbartz.games.snake;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 
 public class Button {
 	
@@ -30,6 +31,20 @@ public class Button {
 		fillPaint.setARGB(200, 0,0,0);
 	}
 	
+	public Button(String string, Typeface mFace) {
+		caption = string;
+		paint = new Paint();
+		paint.setARGB(255, 255, 255, 255);
+		paint.setStyle(Paint.Style.STROKE);
+		
+		textPaint = new Paint();
+		textPaint.setARGB(255, 255, 255, 255);
+		textPaint.setTypeface(mFace);
+		
+		fillPaint = new Paint();
+		fillPaint.setARGB(200, 0,0,0);
+	}
+
 	public void setPosition(int pX, int pY) {
 		rect.left = pX;
 		rect.top = pY;

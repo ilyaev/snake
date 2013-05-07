@@ -37,19 +37,13 @@ public class SnakeBugList {
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
 			
-			if (r.nextInt(100) <= 5) {
+			if (r.nextInt(100) <= 5 && board.gameMode != -1) {
 				bug.type = SnakeBug.BUG_MUSHROOM;
-			}
-			
-			if (r.nextInt(100) <= 7) {
+			} else 	if (r.nextInt(100) <= 7) {
 				bug.type = SnakeBug.BUG_SCORE;
-			}		
-			
-			if (r.nextInt(100) <= 15) {
+			} else 	if (r.nextInt(100) <= 15) {
 				bug.type = SnakeBug.BUG_TRIPPLE;
-			}
-			
-			if (r.nextInt(100) <= 20) {
+			} else if (r.nextInt(100) <= 20) {
 				bug.maxIterations = 60;
 				bug.iteration = 60;
 				bug.type = SnakeBug.BUG_CHERRY;

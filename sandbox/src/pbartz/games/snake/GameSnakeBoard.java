@@ -46,7 +46,7 @@ public class GameSnakeBoard extends SnakeBoard {
 	int tailLength = 0;
 	int killsMade = 0;
 	
-	int spHeight = 30;
+	int spHeight = 0;
 	
 	Paint funnyTextPaint;
 
@@ -61,16 +61,17 @@ public class GameSnakeBoard extends SnakeBoard {
 		quote = new Quote();
 		
 		textPaint = new Paint();
-		textPaint.setARGB(255, 255, 255, 255);		
+		textPaint.setARGB(255, 255, 255, 255);
+		textPaint.setTypeface(tSurface.mFace);
 		
 		scorePaint = new Paint();
 		scorePaint.setARGB(255, 255, 255, 255);		
 		
-		btnReplay = new Button("AGAIN");
-		btnMenu = new Button("MENU");	
-		btnNext = new Button("NEXT");
+		btnReplay = new Button("AGAIN", tSurface.mFace);
+		btnMenu = new Button("MENU", tSurface.mFace);	
+		btnNext = new Button("NEXT", tSurface.mFace);
 		
-		btnRate = new Button("RATE APP");
+		btnRate = new Button("RATE APP", tSurface.mFace);
 		
 		fillPaint = new Paint();
 		fillPaint.setARGB(170, 0,0,0);
@@ -100,9 +101,11 @@ public class GameSnakeBoard extends SnakeBoard {
 			canvas = tCanvas;		
 			canvas.drawRGB(0, 0, 0);
 			
+			
+			
 			if (gameOver != 1) {
 				drawControlPanel();
-				drawScorePanel();
+				//drawScorePanel();
 			}		
 			
 			
@@ -122,7 +125,10 @@ public class GameSnakeBoard extends SnakeBoard {
 			
 			if (gameOver == 1) {
 				drawGameOver();
+			} else {
+				canvas.drawRect(0, 0, sWidth - 1, sHeight - cpHeight, whiteFramePaint);
 			}
+			
 		} finally {
 			
 		}
@@ -147,11 +153,11 @@ public class GameSnakeBoard extends SnakeBoard {
 			
 			canvas.drawText(scoreStr, panel.left + (panel.width() - scoreBounds.width()) / 2, panel.top + 30 + scorePaint.getTextSize() + 5, scorePaint);
 			
-			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
-				drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
-			}		
+//			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
+//				drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
+//			}		
 			
-			if (System.currentTimeMillis() - gameOverCountdown > 3000) {
+			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
 				if (roundWon) {
 					btnNext.draw(canvas);
 				} else {
@@ -328,9 +334,9 @@ public class GameSnakeBoard extends SnakeBoard {
 //		sHeight = 480;
 		
 		cpHeight = (int) (sHeight / 4.210);
-		spHeight = (int)(sHeight / 26.66666);
+		spHeight = 0; //(int)(sHeight / 26.66666);
 		
-		textPaint.setTextSize(spHeight - 2);
+		textPaint.setTextSize((int)(sHeight / 26.66666 - 2));
 		scorePaint.setTextSize(sHeight / 10);
 		
 		btnReplay.setPosition(1, sHeight - (int)(sHeight / 7.61));
@@ -346,8 +352,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnMenu.setFontSize(sHeight / 20);
 		
 		
-		btnRate.setPosition(sWidth / 4, sHeight - (sHeight / 8)*3);
-		btnRate.setSize(sWidth / 2 - 5, sHeight / 8);
+		btnRate.setPosition((int)(sWidth / 4.8), sHeight - (sHeight / 8)*3);
+		btnRate.setSize((int)(sWidth / 1.6 - 5), sHeight / 8);
 		btnRate.setFontSize(sHeight / 20);
 		
 		funnyTextPaint = new Paint();
@@ -372,6 +378,8 @@ public class GameSnakeBoard extends SnakeBoard {
 			cellSizePx = sHeight / cnVertical;
 			cnHorizontal = (int) ((sWidth - cpHeight - spHeight) / cellSizePx);
 		}
+		
+		cpHeight = (int)(sHeight - (cnVertical*cellSizePx));
 		
 		grayPaint = new Paint();
 		grayPaint.setARGB(255, 125, 125, 125);

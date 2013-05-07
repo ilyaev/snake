@@ -11,15 +11,13 @@ public class StartSnakeBoard extends SnakeBoard {
 
 	SnakeBoxSurface surface;
 	
-	List<Button> buttons;
-	
 	List<Integer> snakeQ;
 	
-	int showSpeed = 2000;
+	int showSpeed = 700;
 	
-	final static int ACTION_SOLO = 1;
-	final static int ACTION_BATTLE = 2;
-	final static int ACTION_SURVIVAL = 3;
+	final static int ACTION_SOLO = 0;
+	final static int ACTION_BATTLE = 1;
+	final static int ACTION_SURVIVAL = 2;
 	
 	long lastShowTimeStamp = 0;
 
@@ -27,20 +25,41 @@ public class StartSnakeBoard extends SnakeBoard {
 
 	public static final int MIN_CELLS_NUMBER = 25;
 	
+	Slider slider;
+
+	private float lastTX;
+	
+	List<SnakePiece> cubes;
+	
 
 	public StartSnakeBoard(SnakeBoxSurface tSurface) {
+		
+		grayPaint = new Paint();
+		grayPaint.setARGB(255, 200, 200, 200);
+		
+		slider = new Slider(tSurface.mFace);
+		
+		cubes = new ArrayList<SnakePiece>();
+		
 		surface = tSurface;		
-		buttons = new ArrayList<Button>();
 		
 		bugs = new SnakeBugList(this);
 		snakes = new ArrayList<Snake>();
 		
 		snakeQ = new ArrayList<Integer>();
+		
+		lastShowTimeStamp = System.currentTimeMillis();
 	}
 	
 	public void draw(Canvas tCanvas) {
 		canvas = tCanvas;		
 		canvas.drawRGB(0, 0, 0);
+		
+		float hSize = (float)(cellSizePx * 0.5);
+		
+		for(int i = 0 ; i < cubes.size() ; i++) {
+			cubes.get(i).draw(tCanvas, grayPaint, hSize);
+		}
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			snakes.get(i).draw();
@@ -53,9 +72,9 @@ public class StartSnakeBoard extends SnakeBoard {
 				booms.get(i).draw(tCanvas);
 			}
 		}
-		
-		for(int i = 0 ; i < buttons.size() ; i++) {
-			buttons.get(i).draw(canvas);
+
+		if (slider.active) {
+			slider.render(canvas);
 		}
 		
 		
@@ -71,7 +90,8 @@ public class StartSnakeBoard extends SnakeBoard {
 			initialize();
 		}
 		
-		if (timeDiff >= defaultSpeed) {
+		if (timeDiff >= defaultSpeed) {		
+			
 			
 			for(int i = 0 ; i < snakes.size() ; i++) {
 				if (snakes.get(i).live == 1) {
@@ -86,17 +106,23 @@ public class StartSnakeBoard extends SnakeBoard {
 		}
 		
 		if (showTimeDiff >= showSpeed) {
-				int next = currentShow + 1;
-				if (next > 0 && next < snakes.size() + 1) {
-					if (getSnakeByRace(next).live != 1) {
-						bugs.spawnBug(next);
-						getSnakeByRace(next).live = 1;
-					}					
-				}
-				if (currentShow < 20) {
-					currentShow = next;
-				}
-			lastShowTimeStamp += showTimeDiff;	
+			int next = currentShow + 1;
+			if (next > 0 && next < snakes.size() + 1) {
+				if (getSnakeByRace(next).live != 1) {
+					bugs.spawnBug(next);
+					getSnakeByRace(next).live = 1;
+				}					
+			}
+			if (currentShow < 20) {
+				currentShow = next;
+			}
+			lastShowTimeStamp += showTimeDiff;
+			slider.active = true;
+			if (showSpeed >= 3000) {
+				showSpeed += 3000;
+			} else {
+				showSpeed = 3000;
+			}
 		}
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
@@ -119,6 +145,8 @@ public class StartSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		slider.calculate();
+		
 	}
 	
 	public void initialize() {
@@ -130,7 +158,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		walls = new BlockList(this);
 		
-		bugs.darkRedPaint = bugs.redPaint;
+		//bugs.darkRedPaint = bugs.redPaint;
 		
 		cnHorizontal = MIN_CELLS_NUMBER;
 		cpHeight = 0;
@@ -146,8 +174,8 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		oMap = new boolean[cnHorizontal + 1][cnVertical + 1];
 		
-		grayPaint = new Paint();
-		grayPaint.setARGB(255, 125, 125, 125);
+//		grayPaint = new Paint();
+//		grayPaint.setARGB(255, 125, 125, 125);
 		
 		whiteFramePaint = new Paint();
 		whiteFramePaint.setARGB(255, 255, 255, 255);
@@ -159,13 +187,14 @@ public class StartSnakeBoard extends SnakeBoard {
 		greenPaint = new Paint();
 		greenPaint.setARGB(255, 0, 255, 0);
 		
-		darkGreenPaint = greenPaint;
+		//darkGreenPaint = greenPaint;
+		darkGreenPaint = new Paint();
+		darkGreenPaint.setARGB(255, 0, 125, 0);
 		
 		state = INITED;
 		
 		lastTimeStamp = 0;		
 		
-		initButtons();
 		addSnakes();
 		rebuildObstMap();
 		
@@ -281,55 +310,28 @@ public class StartSnakeBoard extends SnakeBoard {
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			snakeQ.add(snakes.get(i).race);
 		}
-	}
-	
-	public void initButtons() {
 		
-		
-		int bHeight = (int) sHeight / 9;
-		int bWidth = (int) (sWidth / 1.4);
-		
-		int shiftX = (sWidth - bWidth) / 2;
-		int shiftY = (sHeight - (bHeight * 3) +  ((sHeight / 40) * 2)) / 2 ;
-		
-		Button btn = new Button("SOLO");
-		btn.setPosition(shiftX, shiftY);
-		
-		btn.setSize(bWidth, bHeight);
-		btn.setFontSize((int)(bHeight - (sHeight / 26.6666)));
-		btn.setAction(StartSnakeBoard.ACTION_SOLO);		
-		buttons.add(btn);
-		
-		shiftY += bHeight + (int) sHeight / 40;
-		
-		btn = new Button("ESCAPE");
-		
-		btn.setPosition(shiftX, shiftY);
-		btn.setSize(bWidth, bHeight);
-		btn.setFontSize((int)(bHeight - (sHeight / 26.6666)));
-		btn.setAction(StartSnakeBoard.ACTION_BATTLE);	
-		buttons.add(btn);
-		
-		shiftY += bHeight + (int) sHeight / 40;
-		
-		btn = new Button("SURVIVAL");
-		
-		btn.setPosition(shiftX, shiftY);
-		btn.setSize(bWidth, bHeight);
-		btn.setFontSize((int)(bHeight - (sHeight / 26.6666)));
-		btn.setAction(StartSnakeBoard.ACTION_SURVIVAL);	
-		buttons.add(btn);		
-	}
-	
-	public void processTouch(MotionEvent event) {
-		if (event.getAction() == MotionEvent.ACTION_UP) {
-			int action = -1;
-			
-			for(int i = 0 ; i < buttons.size() ; i++) {
-				if (buttons.get(i).rect.contains((int)event.getX(), (int)event.getY())) {
-					action = buttons.get(i).action;
-				}
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			for(int j = 0 ; j < snakes.get(i).body.items.size() ; j++) {
+				cubes.add(new SnakePiece(snakes.get(i).body.items.get(j).cellX, snakes.get(i).body.items.get(j).cellY, this));
 			}
+		}
+	}
+	
+
+	public void processTouch(MotionEvent event) {
+		
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			lastTX = event.getX();
+		}
+		
+		if (event.getAction() == MotionEvent.ACTION_MOVE) {
+			slider.setOffset((int) (lastTX - event.getX()));
+		}
+		
+		
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			int action = slider.touchEnd();
 			
 			switch (action) {
 				case StartSnakeBoard.ACTION_SOLO:
