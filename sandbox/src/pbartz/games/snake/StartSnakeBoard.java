@@ -26,6 +26,8 @@ public class StartSnakeBoard extends SnakeBoard {
 	public static final int MIN_CELLS_NUMBER = 25;
 	
 	Slider slider;
+	
+	LevelSlider levelSlider;
 
 	private float lastTX;
 	
@@ -38,6 +40,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		grayPaint.setARGB(255, 200, 200, 200);
 		
 		slider = new Slider(tSurface.mFace);
+		levelSlider = new LevelSlider(this);
 		
 		cubes = new ArrayList<SnakePiece>();
 		
@@ -76,6 +79,8 @@ public class StartSnakeBoard extends SnakeBoard {
 		if (slider.active) {
 			slider.render(canvas);
 		}
+		
+		//levelSlider.draw(canvas);
 		
 		
 	}
@@ -146,6 +151,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		}
 		
 		slider.calculate();
+		levelSlider.calculate();
 		
 	}
 	
@@ -327,11 +333,13 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
 			slider.setOffset((int) (lastTX - event.getX()));
+			levelSlider.setOffset((int) (lastTX - event.getX()));
 		}
 		
 		
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			int action = slider.touchEnd();
+			levelSlider.touchEnd();
 			
 			switch (action) {
 				case StartSnakeBoard.ACTION_SOLO:
