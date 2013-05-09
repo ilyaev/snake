@@ -68,6 +68,8 @@ public class SnakeBoard {
 	public long gameOverCountdown = 0;
 
 	long freezeStartTime = 0;
+
+	public int gameLevel = 0;
 	
 	public void draw(Canvas tCanvas) {
 		canvas = tCanvas;
@@ -192,6 +194,10 @@ public class SnakeBoard {
 		}
 		
 		rebuildObstMap();		
+	}
+
+	public boolean backAction() {
+		return false;
 	}
 	
 	

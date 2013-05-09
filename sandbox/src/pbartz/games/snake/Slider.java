@@ -75,7 +75,9 @@ public class Slider {
 	}
 	
 	public void setOffset(int nOffset) {
-		offsetX = staticOffset + nOffset;
+		if (active) {
+			offsetX = staticOffset + nOffset;
+		}
 	}
 	
 	public void calculate() {
@@ -94,19 +96,23 @@ public class Slider {
 	}
 	
 	public void render(Canvas canvas) {
-		for(int i = 0 ; i < rectItems.length ; i++) {
-			rectItems[i].left = (int) (originalRects[i].left - offsetX);
-			rectItems[i].right = (int) (originalRects[i].right - offsetX);
-			
-			canvas.drawRect(rectItems[i], paint);
-			canvas.drawRect(rectItems[i], framePaint);			
-			canvas.drawText(menuItems[i], rectItems[i].left + textOX[i], rectItems[i].top + textOY[i] ,  textPaint);
+		if (active) {
+			for(int i = 0 ; i < rectItems.length ; i++) {
+				rectItems[i].left = (int) (originalRects[i].left - offsetX);
+				rectItems[i].right = (int) (originalRects[i].right - offsetX);
+				
+				canvas.drawRect(rectItems[i], paint);
+				canvas.drawRect(rectItems[i], framePaint);			
+				canvas.drawText(menuItems[i], rectItems[i].left + textOX[i], rectItems[i].top + textOY[i] ,  textPaint);
+			}
 		}
 	}
 
 	public int touchEnd() {
 		int result = -1;
-		
+		if (!active) {
+			return result;
+		}
 		int maxItem = 0;
 		int maxW = 0;
 		

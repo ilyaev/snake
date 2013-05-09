@@ -17,6 +17,8 @@ public class MapPreview {
 	int leftX, topY, width, height;
 	
 	int currOffset = 0;
+
+	private Paint fillPaint;
 	
 	public MapPreview(int tLevel, SnakeBoard tBoard) {
 		level = tLevel;
@@ -43,18 +45,24 @@ public class MapPreview {
 		if (leftX - offsetX > 480 || leftX - offsetX + width < 0) {
 			// skip
 		} else {		
+			tCanvas.drawRect(leftX - offsetX, topY, leftX - offsetX + width, topY + height, fillPaint);
 			tCanvas.drawRect(leftX - offsetX, topY, leftX - offsetX + width, topY + height, framePaint);
-			for(int i = 0 ; i < blocks.items.size() ; i++) {
-				Block block = blocks.items.get(i);
-				
-				float leftx = (block.x-1) * cWidth;
-				float topy = (block.y-1) * cHeight;
-				
-				leftx += leftX - offsetX;		
-				topy += topY;
-				
-				tCanvas.drawRect(leftx + 1, topy + 1, leftx + cWidth - 1, topy + cHeight - 1, paint);
-			}
+			
+			
+//			for(int i = 0 ; i < blocks.items.size() ; i++) {
+//				Block block = blocks.items.get(i);
+//				
+//				float leftx = (block.x-1) * cWidth;
+//				float topy = (block.y-1) * cHeight;
+//				
+//				leftx += leftX - offsetX;		
+//				topy += topY;
+//				
+//				tCanvas.drawRect(leftx + 1, topy + 1, leftx + cWidth - 1, topy + cHeight - 1, paint);
+//			}
+			
+			tCanvas.drawText(Integer.toString(level), leftX - offsetX + 5, topY+50, textPaint);
+			
 		}
 	}
 	
@@ -90,6 +98,9 @@ public class MapPreview {
 		
 		paint = new Paint();
 		paint.setARGB(255, 200, 200, 200);
+		
+		fillPaint = new Paint();
+		fillPaint.setARGB(200, 0, 0, 0);
 	}
 	
 }

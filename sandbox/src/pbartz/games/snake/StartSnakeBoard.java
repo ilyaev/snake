@@ -32,6 +32,10 @@ public class StartSnakeBoard extends SnakeBoard {
 	private float lastTX;
 	
 	List<SnakePiece> cubes;
+
+	private int menuAction = -1;
+
+	private int mapAction;
 	
 
 	public StartSnakeBoard(SnakeBoxSurface tSurface) {
@@ -76,11 +80,9 @@ public class StartSnakeBoard extends SnakeBoard {
 			}
 		}
 
-		if (slider.active) {
-			slider.render(canvas);
-		}
+		slider.render(canvas);
 		
-		//levelSlider.draw(canvas);
+		levelSlider.draw(canvas);
 		
 		
 	}
@@ -122,7 +124,11 @@ public class StartSnakeBoard extends SnakeBoard {
 				currentShow = next;
 			}
 			lastShowTimeStamp += showTimeDiff;
-			slider.active = true;
+			
+			if (showSpeed == 700) {
+				slider.active = true;
+			}
+
 			if (showSpeed >= 3000) {
 				showSpeed += 3000;
 			} else {
@@ -338,29 +344,50 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		
 		if (event.getAction() == MotionEvent.ACTION_UP) {
-			int action = slider.touchEnd();
-			levelSlider.touchEnd();
+			if (menuAction < 0) {
+				menuAction = slider.touchEnd();
+			}
+			mapAction = levelSlider.touchEnd();
 			
-			switch (action) {
-				case StartSnakeBoard.ACTION_SOLO:
-					surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SOLO;
-					surface.gameBoard.state = SnakeBoard.NOT_INITED;
-					surface.setBoard(surface.gameBoard);
-					break;
-				case StartSnakeBoard.ACTION_BATTLE:
-					surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_BATTLE;
-					surface.gameBoard.state = SnakeBoard.NOT_INITED;
-					surface.setBoard(surface.gameBoard);
-					break;
-				case StartSnakeBoard.ACTION_SURVIVAL:
-					surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
-					surface.gameBoard.state = SnakeBoard.NOT_INITED;
-					surface.setBoard(surface.gameBoard);
-					break;	
-				default:
-					break;
+			if (menuAction >= 0) {
+				levelSlider.active = true;
+				slider.active = false;
+			}
+			
+			if (mapAction >= 0) {
+				surface.gameBoard.gameLevel = mapAction;
+				switch (menuAction) {
+				
+					case StartSnakeBoard.ACTION_SOLO:
+						surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SOLO;
+						surface.gameBoard.state = SnakeBoard.NOT_INITED;
+						surface.setBoard(surface.gameBoard);
+						break;
+					case StartSnakeBoard.ACTION_BATTLE:
+						surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_BATTLE;
+						surface.gameBoard.state = SnakeBoard.NOT_INITED;
+						surface.setBoard(surface.gameBoard);
+						break;
+					case StartSnakeBoard.ACTION_SURVIVAL:
+						surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
+						surface.gameBoard.state = SnakeBoard.NOT_INITED;
+						surface.setBoard(surface.gameBoard);
+						break;	
+					default:
+						break;
+				}
 			}
 		}
+	}
+	
+	public boolean backAction() {
+		if (!slider.active) {
+			slider.active = true;
+			menuAction = -1;
+			levelSlider.active = false;
+			return true;
+		}
+		return false;
 	}
 	
 }

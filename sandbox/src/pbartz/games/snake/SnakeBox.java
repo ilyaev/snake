@@ -29,7 +29,9 @@ public class SnakeBox extends Activity implements OnTouchListener {
 		if (aSurfaceView.board == aSurfaceView.gameBoard) {
 			aSurfaceView.setBoard(aSurfaceView.startBoard);
 		} else {
-			super.onBackPressed();
+			if (!aSurfaceView.board.backAction()) {
+				super.onBackPressed();
+			}
 		}
 	}
 

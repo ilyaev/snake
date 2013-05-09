@@ -309,6 +309,8 @@ public class GameSnakeBoard extends SnakeBoard {
 				level = 1;
 			}
 			
+			gameLevel = level;
+			
 			surface.saveState();
 			
 			snakes.get(0).currentCmd = 0;
@@ -498,10 +500,8 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 
 	private void startGameSolo() {
-		bugs.spawnBug(Snake.RACE_PLAYER);
-		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
-		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
-		snakes.get(0).live = 1;
+		
+		startGameBattle();
 		
 	}
 	
@@ -514,56 +514,51 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		for (int i = 0 ; i < sWalls.length ; i++) {
 			String[] xyt = sWalls[i].split(",");
-			walls.addBlock(Integer.parseInt(xyt[0]), Integer.parseInt(xyt[1]),  Integer.parseInt(xyt[2]));
+			walls.addBlock(Integer.parseInt(xyt[0]), Integer.parseInt(xyt[1]),  gameMode == GAMEMODE_BATTLE ? Integer.parseInt(xyt[2]) : 1);
 		}
 		
 		rebuildObstMap();
 		
-		for(int i =  0 ; i < sSnakes.length ; i++) {
-			String[] xy = sSnakes[i].split(",");
-			
-			bugs.spawnBug(curRace);
-			
-			Snake tSnake = new Snake(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), this);
-			tSnake.race = curRace;
-			tSnake.live = 1;			
-			
-			
-			tSnake.body.grow(SnakeBug.BUG_TRIPPLE);
-			if (curRace == Snake.RACE_PLAYER) {
-				tSnake.currentCmd = Snake.CMD_UP;
+		
+		
+			for(int i =  0 ; i < sSnakes.length ; i++) {
+				String[] xy = sSnakes[i].split(",");
+				
+				
+				
+				Snake tSnake = new Snake(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), this);
+				tSnake.race = curRace;
+				tSnake.live = 1;			
+				
+				
+				tSnake.body.grow(SnakeBug.BUG_TRIPPLE);
+				if (curRace == Snake.RACE_PLAYER) {
+					tSnake.currentCmd = Snake.CMD_UP;
+				}
+				
+				if (gameMode == GAMEMODE_BATTLE || curRace == Snake.RACE_PLAYER) {
+					bugs.spawnBug(curRace);
+					snakes.add(tSnake);
+				}
+				curRace += 1;
 			}
-			
-			snakes.add(tSnake);
-			curRace += 1;
-		}
+
 		
 		walls.placeAllWalls(this);		
 		
 	}
 	
 	private void startGameBattle() {
-		buildLevel(level);	
+		if (gameLevel > 0) {
+			buildLevel(gameLevel);
+		} else {
+			buildLevel(level);
+		}
 	}
 	
 	private void startGameSurvival() {
-		
+		startGameBattle();
 		lastSnakeSpawn = System.currentTimeMillis();
-		
-		bugs.spawnBug(Snake.RACE_PLAYER);
-		bugs.spawnBug(Snake.RACE_ENEMY1);
-		
-		snakes.add(new Snake(Math.round(cnHorizontal / 2), Math.round(cnVertical / 2), this));
-		snakes.get(0).body.grow(SnakeBug.BUG_TRIPPLE);
-		snakes.get(0).currentCmd = Snake.CMD_UP;
-		snakes.get(0).live = 1;
-		
-		Snake foeSnake = new Snake(3,10, this);
-		foeSnake.race = Snake.RACE_ENEMY1;
-		foeSnake.live = 1;
-		
-		snakes.add(foeSnake);
-		snakes.get(1).body.grow(SnakeBug.BUG_TRIPPLE);
 	}
 
 	public void processTouch(MotionEvent event) {

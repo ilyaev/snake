@@ -21,6 +21,8 @@ public class Block {
 	boolean isUnlocked = false;
 	Paint starPaint;
 	
+	int height, width;
+	
 	float rx, ry, tx, ty, sx, sy;
 	
 	
