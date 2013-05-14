@@ -23,7 +23,7 @@ public class StartSnakeBoard extends SnakeBoard {
 
 	private int currentShow = -1;
 
-	public static final int MIN_CELLS_NUMBER = 25;
+	public static final int MIN_CELLS_NUMBER = 24;
 	
 	Slider slider;
 	
@@ -39,12 +39,12 @@ public class StartSnakeBoard extends SnakeBoard {
 	
 
 	public StartSnakeBoard(SnakeBoxSurface tSurface) {
-		
+		boardType = BOARDTYPE_DEMO;
 		grayPaint = new Paint();
 		grayPaint.setARGB(255, 200, 200, 200);
 		
 		slider = new Slider(tSurface.mFace);
-		levelSlider = new LevelSlider(this);
+		levelSlider = new LevelSlider(this, tSurface.mFace);
 		
 		cubes = new ArrayList<SnakePiece>();
 		
@@ -56,6 +56,10 @@ public class StartSnakeBoard extends SnakeBoard {
 		snakeQ = new ArrayList<Integer>();
 		
 		lastShowTimeStamp = System.currentTimeMillis();
+	}
+	
+	public void refresh() {
+		levelSlider.refreshPreviews();
 	}
 	
 	public void draw(Canvas tCanvas) {
@@ -230,92 +234,92 @@ public class StartSnakeBoard extends SnakeBoard {
 		snakes.add(snake);
 		
 		// "N" - 1
-		snake = new Snake(7, 2, this);
-		snake.body.addTail(7, 3);
-		snake.body.addTail(7,4);
-		snake.body.addTail(7,5);
-		snake.body.addTail(7,6);
+		snake = new Snake(6, 2, this);
+		snake.body.addTail(6, 3);
+		snake.body.addTail(6,4);
+		snake.body.addTail(6,5);
+		snake.body.addTail(6,6);
 		snake.race = 2;
 		snakes.add(snake);
 		
 		// "N" - 2
-		snake = new Snake(9, 3, this);
-		snake.body.addTail(9, 4);
+		snake = new Snake(8, 5, this);
 		snake.body.addTail(8, 4);
-		snake.body.addTail(8, 5);
+		snake.body.addTail(7, 4);
+		snake.body.addTail(7, 3);
 		snake.race = 3;
 		snakes.add(snake);
 		
 		// "N" - 3
-		snake = new Snake(10, 6, this);
-		snake.body.addTail(10, 5);
-		snake.body.addTail(10, 4);
-		snake.body.addTail(10, 3);
-		snake.body.addTail(10, 2);
+		snake = new Snake(9, 6, this);
+		snake.body.addTail(9, 5);
+		snake.body.addTail(9, 4);
+		snake.body.addTail(9, 3);
+		snake.body.addTail(9, 2);
 		snake.race = 4;
 		snakes.add(snake);	
 		
 		// "A" - 1
-		snake = new Snake(16, 6, this);
-		snake.body.addTail(16, 5);
-		snake.body.addTail(16, 4);
-		snake.body.addTail(16, 3);
-		snake.body.addTail(16, 2);
-		snake.body.addTail(15, 2);
+		snake = new Snake(14, 6, this);
+		snake.body.addTail(14, 5);
+		snake.body.addTail(14, 4);
+		snake.body.addTail(14, 3);
 		snake.body.addTail(14, 2);
 		snake.body.addTail(13, 2);
-		snake.body.addTail(13, 3);
-		snake.body.addTail(13, 4);
-		snake.body.addTail(13, 5);
-		snake.body.addTail(13, 6);
+		snake.body.addTail(12, 2);
+		snake.body.addTail(11, 2);
+		snake.body.addTail(11, 3);
+		snake.body.addTail(11, 4);
+		snake.body.addTail(11, 5);
+		snake.body.addTail(11, 6);
 		snake.race = 5;
 		snakes.add(snake);
 		
 		// "A" - 2
-		snake = new Snake(14, 5, this);
-		snake.body.addTail(15, 5);
-		snake.body.addTail(15, 4);
-		snake.body.addTail(14, 4);
+		snake = new Snake(12, 5, this);
+		snake.body.addTail(13, 5);
+		snake.body.addTail(13, 4);
+		snake.body.addTail(12, 4);
 		snake.race = 6;
 		snakes.add(snake);
 		
 		// "K" - 1
-		snake = new Snake(21, 2, this);
-		snake.body.addTail(21, 3);
-		snake.body.addTail(20, 3);
+		snake = new Snake(19, 2, this);
 		snake.body.addTail(19, 3);
 		snake.body.addTail(18, 3);
-		snake.body.addTail(18, 2);
+		snake.body.addTail(17, 3);
+		snake.body.addTail(16, 3);
+		snake.body.addTail(16, 2);
 		snake.race = 7;
 		snakes.add(snake);
 		
 		// "K" - 2
-		snake = new Snake(18, 6, this);
-		snake.body.addTail(18, 5);
+		snake = new Snake(16, 6, this);
+		snake.body.addTail(16, 5);
+		snake.body.addTail(16, 4);
+		snake.body.addTail(17, 4);
 		snake.body.addTail(18, 4);
-		snake.body.addTail(19, 4);
-		snake.body.addTail(20, 4);
-		snake.body.addTail(20, 5);
-		snake.body.addTail(20, 6);
-		snake.body.addTail(21, 6);
+		snake.body.addTail(18, 5);
+		snake.body.addTail(18, 6);
+		snake.body.addTail(19, 6);
 		snake.race = 8;
 		snakes.add(snake);
 		
 		// "E" - 1
-		snake = new Snake(25, 6, this);
-		snake.body.addTail(24, 6);
-		snake.body.addTail(23, 6);
-		snake.body.addTail(23, 5);
-		snake.body.addTail(23, 4);
-		snake.body.addTail(23, 3);
+		snake = new Snake(23, 6, this);
+		snake.body.addTail(22, 6);
+		snake.body.addTail(21, 6);
+		snake.body.addTail(21, 5);
+		snake.body.addTail(21, 4);
+		snake.body.addTail(21, 3);
+		snake.body.addTail(21, 2);
+		snake.body.addTail(22, 2);
 		snake.body.addTail(23, 2);
-		snake.body.addTail(24, 2);
-		snake.body.addTail(25, 2);
 		snake.race = 9;
 		snakes.add(snake);
 		
 		// "E" - 2
-		snake = new Snake(24, 4, this);
+		snake = new Snake(22, 4, this);
 		snake.race = 10;
 		snakes.add(snake);		
 		
@@ -347,35 +351,36 @@ public class StartSnakeBoard extends SnakeBoard {
 			if (menuAction < 0) {
 				menuAction = slider.touchEnd();
 			}
+			
 			mapAction = levelSlider.touchEnd();
 			
 			if (menuAction >= 0) {
-				levelSlider.active = true;
-				slider.active = false;
+				if (levelSlider.active == false) {
+					levelSlider.active = true;
+					levelSlider.offsetX -= 300;
+					levelSlider.iteration = 0;
+					levelSlider.dX = (-300) / levelSlider.maxIterations;				
+					
+					slider.active = false;
+					switch (menuAction) {
+						case StartSnakeBoard.ACTION_SOLO:
+							gameMode = SnakeBoard.GAMEMODE_SOLO;
+							break;
+						case StartSnakeBoard.ACTION_BATTLE:
+							gameMode = SnakeBoard.GAMEMODE_BATTLE;
+							break;
+						case StartSnakeBoard.ACTION_SURVIVAL:
+							gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
+							break;	
+					}
+				}
 			}
 			
 			if (mapAction >= 0) {
 				surface.gameBoard.gameLevel = mapAction;
-				switch (menuAction) {
-				
-					case StartSnakeBoard.ACTION_SOLO:
-						surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SOLO;
-						surface.gameBoard.state = SnakeBoard.NOT_INITED;
-						surface.setBoard(surface.gameBoard);
-						break;
-					case StartSnakeBoard.ACTION_BATTLE:
-						surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_BATTLE;
-						surface.gameBoard.state = SnakeBoard.NOT_INITED;
-						surface.setBoard(surface.gameBoard);
-						break;
-					case StartSnakeBoard.ACTION_SURVIVAL:
-						surface.gameBoard.gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
-						surface.gameBoard.state = SnakeBoard.NOT_INITED;
-						surface.setBoard(surface.gameBoard);
-						break;	
-					default:
-						break;
-				}
+				surface.gameBoard.gameMode = gameMode;
+				surface.gameBoard.state = SnakeBoard.NOT_INITED;
+				surface.setBoard(surface.gameBoard);				
 			}
 		}
 	}
@@ -385,9 +390,40 @@ public class StartSnakeBoard extends SnakeBoard {
 			slider.active = true;
 			menuAction = -1;
 			levelSlider.active = false;
+			slider.offsetX -= 180;
+			slider.iteration = 0;
+			slider.dX = (-180) / slider.maxIterations;	
 			return true;
 		}
 		return false;
+	}
+	
+	public void rebuildObstMap() {
+		for(int x = 1 ; x <= cnHorizontal ; x++) {
+			for(int y = 1 ; y <= cnVertical ; y++) {
+				oMap[x][y] = false;
+			}
+		}
+		
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			if (snakes.get(i).active == 1) {
+				for (int j = 0 ; j < snakes.get(i).body.items.size() ; j++) {
+					oMap[snakes.get(i).body.items.get(j).cellX][snakes.get(i).body.items.get(j).cellY] = true;			
+				}
+			}
+		}
+		
+		if (walls != null && walls.items.size() > 0) {
+			for(int i = 0 ; i < walls.items.size() ; i++) {
+				if (walls.items.get(i).type != Block.BLOCK_EXIT) {
+					oMap[walls.items.get(i).x][walls.items.get(i).y] = true;
+				}
+			}
+		}
+		
+		for(int i = 0 ; i < cubes.size() ; i++) {
+			oMap[cubes.get(i).cellX][cubes.get(i).cellY] = true;
+		}
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 
 public class LevelSlider {
 	
@@ -15,12 +16,12 @@ public class LevelSlider {
 	private int leftX;
 	private int itemHeight;
 	private int topY;
-	private int offsetX;
-	private int staticOffset = 0;
-	private int currentItem = 0;
-	private int iteration = 0;
-	private int maxIterations = 10;
-	private int dX = 0;
+	int offsetX;
+	int staticOffset = 0;
+	int currentItem = 0;
+	int iteration = 0;
+	int maxIterations = 10;
+	int dX = 0;
 	
 	int transFrom, transTo;
 	
@@ -34,7 +35,7 @@ public class LevelSlider {
 	private int offsetTo = 0;
 	public boolean active = false;
 	
-	public LevelSlider(SnakeBoard tBoard) {
+	public LevelSlider(SnakeBoard tBoard, Typeface mFace) {
 		
 		active = false;
 		
@@ -50,24 +51,34 @@ public class LevelSlider {
 		
 		int between = 20;
 		int index = 0;
-		for(int i = 2 ; i <= SnakeLevels.levels.length ; i++) {
-			MapPreview level = new MapPreview(i, board);
+		
+		for(int i = 1 ; i <= SnakeLevels.levels.length ; i++) {
+			MapPreview level = new MapPreview(i, board, mFace);
 			level.setSize(leftX + (index*itemWidth) + (between * index), topY, itemWidth, itemHeight);
 			levels.add(level);
 			index += 1;
 		}
 		
 		blockPaint = new Paint();
-		blockPaint.setARGB(200, 255, 255, 255);
+		blockPaint.setARGB(255, 255, 255, 255);
 		
 		textPaint = new Paint();
 		textPaint.setTextSize(30);
+		textPaint.setTypeface(mFace);
 		textPaint.setColor(Color.WHITE);	
 		
 		transFrom = 0;
 		transTo = 1;
 		
 		switchTransition(transFrom, transTo);
+	}
+	
+	public void refreshPreviews() {
+		for(int i = 0 ; i < levels.size() ; i++) {
+			if (levels.get(i).level == GameScore.lastUnlockedLevel + 2) {
+				levels.get(i).initialize();
+			}
+		}
 	}
 	
 	public void calculate() {
@@ -102,7 +113,9 @@ public class LevelSlider {
 		}
 		
 		if (currentItem == maxItem && Math.abs(offsetX - staticOffset) < 5) {
-			result = levels.get(currentItem).level;
+			if (!GameScore.isLevelLocked(levels.get(currentItem).level)) {
+				result = levels.get(currentItem).level;
+			}
 		}
 
 		currentItem  = maxItem;
@@ -183,6 +196,7 @@ public class LevelSlider {
 	
 	public void draw(Canvas canvas) {
 		if (active) {
+			
 			for(int i = 0 ; i < levels.size() ; i++) {
 				levels.get(i).draw(canvas, offsetX);			
 			}
@@ -205,6 +219,12 @@ public class LevelSlider {
 				
 				canvas.drawRect(x - offsetX  + 1, y + 1, x - offsetX + block.width - 1, y + block.height - 1, blockPaint);
 			}
+			
+			for(int i = 0 ; i < levels.size() ; i++) {
+				levels.get(i).drawMap(canvas, offsetX);			
+			}
+			
+			
 		}
 	}
 
@@ -236,7 +256,7 @@ public class LevelSlider {
 			}
 			
 			if (tF < 0) tF = 0;
-			if (tT > 9) tT = 9;
+			if (tT > levels.size() - 1) tT = levels.size() - 1;
 			
 			if (tF != transFrom) {
 				transFrom = tF;

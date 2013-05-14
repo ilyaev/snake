@@ -37,7 +37,7 @@ public class SnakeBugList {
 		} else {		
 			SnakeBug bug = new SnakeBug(bX, bY);
 			
-			if (r.nextInt(100) <= 5 && board.gameMode != -1) {
+			if (r.nextInt(100) <= 5 && board.boardType != SnakeBoard.BOARDTYPE_DEMO) {
 				bug.type = SnakeBug.BUG_MUSHROOM;
 			} else 	if (r.nextInt(100) <= 7) {
 				bug.type = SnakeBug.BUG_SCORE;

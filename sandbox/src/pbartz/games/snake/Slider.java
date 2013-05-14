@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 public class Slider {
 
 	String menuItems[] = {"Classic", "Escape", "Survival"};
+	String menuDescr[] = {"Grow longest tail you \ncan. No rivals.", "Entrap rivals and \ncollect keys to unlock \nnext level.", "Last snake standing."};
 	Rect rectItems[];
 	Rect originalRects[];
 	int textOX[];
@@ -22,26 +23,33 @@ public class Slider {
 	int leftX = 0;
 	float offsetX = 0;
 	
-	Paint paint, textPaint, framePaint;
-	private int iteration = 0;
-	private int maxIterations = 5;
-	private float dX;
+	Paint paint, textPaint, framePaint, smTextPaint;
+	int iteration = 0;
+	int maxIterations = 5;
+	float dX;
 	int currentItem = 0;
 	int staticOffset = 0;
 	private int textOffset = 0;
 	boolean active = false;
+	private Rect mBounds;
+	private int actualItem = 0;
 	
 	public Slider(Typeface mFace) {
 		screenW = 480;
 		screenH = 800;
 		
 		paint = new Paint();
-		paint.setARGB(200, 0, 0, 0);
+		paint.setARGB(200, 50, 50, 50);
 		
 		textPaint = new Paint();
 		textPaint.setTextSize(55);
 		textPaint.setColor(Color.WHITE);		
 		textPaint.setTypeface(mFace);
+		
+		smTextPaint = new Paint();
+		smTextPaint.setTextSize(30);
+		smTextPaint.setColor(Color.WHITE);		
+		smTextPaint.setTypeface(mFace);
 		
 		textOffset = (int) ((itemHeight - 55) / 2);
 		
@@ -72,11 +80,27 @@ public class Slider {
 		
 		offsetX = -300;
 		dX = (offsetX - 0) / maxIterations;		
+		
+		mBounds = new Rect();
 	}
 	
 	public void setOffset(int nOffset) {
 		if (active) {
 			offsetX = staticOffset + nOffset;
+			int maxItem = 0;
+			int maxW = 0;
+			
+			for(int i = 0 ; i < rectItems.length ; i++) {
+				int left = Math.max(0, rectItems[i].left);
+				int right = Math.min(screenW, rectItems[i].right);
+				
+				if ((right - left) > maxW) {
+					maxW = right - left;
+					maxItem = i;
+				}
+			}
+		
+			actualItem   = maxItem;
 		}
 	}
 	
@@ -89,12 +113,6 @@ public class Slider {
 		}
 	}
 	
-	public void animate() {
-		
-			
-		
-	}
-	
 	public void render(Canvas canvas) {
 		if (active) {
 			for(int i = 0 ; i < rectItems.length ; i++) {
@@ -105,7 +123,23 @@ public class Slider {
 				canvas.drawRect(rectItems[i], framePaint);			
 				canvas.drawText(menuItems[i], rectItems[i].left + textOX[i], rectItems[i].top + textOY[i] ,  textPaint);
 			}
+			
+			drawMultilineText(menuDescr[actualItem], 5, topY + itemHeight + 50, smTextPaint, canvas);
 		}
+	}
+	
+	public void drawMultilineText(String str, int x, int y, Paint paint, Canvas canvas) {
+	    int      lineHeight = 0;
+	    int      yoffset    = 0;
+	    String[] lines      = str.split("\n");
+
+	    paint.getTextBounds("Ig", 0, 2, mBounds);
+	    lineHeight = (int) ((float) mBounds.height() * 1.6);
+
+	    for (int i = 0; i < lines.length; ++i) {
+	        canvas.drawText(lines[i], x, y + yoffset, paint);
+	        yoffset = yoffset + lineHeight;
+	    }
 	}
 
 	public int touchEnd() {

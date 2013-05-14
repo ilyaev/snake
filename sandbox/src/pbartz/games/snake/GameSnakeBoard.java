@@ -97,40 +97,42 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 
 	public void draw(Canvas tCanvas) {
-		try {
-			canvas = tCanvas;		
-			canvas.drawRGB(0, 0, 0);
-			
-			
-			
-			if (gameOver != 1) {
-				drawControlPanel();
-				//drawScorePanel();
-			}		
-			
-			
-			for(int i = 0 ; i < snakes.size() ; i++) {
-				snakes.get(i).draw();
-			}
-			
-			if (booms != null) {
-				for(int i = 0 ; i < booms.size() ; i++) {
-					booms.get(i).draw(tCanvas);
+		if (tCanvas != null) {
+			try {
+				canvas = tCanvas;		
+				canvas.drawRGB(0, 0, 0);
+				
+				
+				
+				if (gameOver != 1) {
+					drawControlPanel();
+					//drawScorePanel();
+				}		
+				
+				
+				for(int i = 0 ; i < snakes.size() ; i++) {
+					snakes.get(i).draw();
 				}
+				
+				if (booms != null) {
+					for(int i = 0 ; i < booms.size() ; i++) {
+						booms.get(i).draw(tCanvas);
+					}
+				}
+				
+				bugs.draw(canvas);
+				
+				walls.draw(canvas);
+				
+				if (gameOver == 1) {
+					drawGameOver();
+				} else {
+					canvas.drawRect(0, 0, sWidth - 1, sHeight - cpHeight, whiteFramePaint);
+				}
+				
+			} finally {
+				
 			}
-			
-			bugs.draw(canvas);
-			
-			walls.draw(canvas);
-			
-			if (gameOver == 1) {
-				drawGameOver();
-			} else {
-				canvas.drawRect(0, 0, sWidth - 1, sHeight - cpHeight, whiteFramePaint);
-			}
-			
-		} finally {
-			
 		}
 	}
 	
@@ -172,7 +174,7 @@ public class GameSnakeBoard extends SnakeBoard {
 		}
 	}
 	
-	private int getScore() {
+	public int getScore() {
 		int r = 0;
 		try {
 			r = (snakes.get(0).body.items.size() - 1) * 10 + snakes.get(0).score;
@@ -302,7 +304,15 @@ public class GameSnakeBoard extends SnakeBoard {
 		if (isExit == true && gameOver == 0) {
 			roundWon = true;
 			
-			level += 1;
+			if (GameScore.updateScore(gameMode, gameLevel, getScore())) {
+				// high score!
+			}
+				
+			
+			
+			
+			gameLevel += 1;
+			level = gameLevel;
 
 			if (level > SnakeLevels.levels.length) {
 				// game over real
@@ -311,7 +321,13 @@ public class GameSnakeBoard extends SnakeBoard {
 			
 			gameLevel = level;
 			
+			if (GameScore.unlockLevel(gameLevel)) {
+				// rebuild slider levels
+				surface.startBoard.refresh();
+			}
+			
 			surface.saveState();
+			
 			
 			snakes.get(0).currentCmd = 0;
 			snakes.get(0).live = 0;
@@ -595,17 +611,7 @@ public class GameSnakeBoard extends SnakeBoard {
 			} else if (btnDown.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_UP) {
 				btnDownState = event.getAction();
 				snakes.get(0).setCommand(Snake.CMD_DOWN);
-			} 
-//			else {
-//				if (event.getAction() == MotionEvent.ACTION_UP) {
-//					level += 1;
-//					if (level > SnakeLevels.levels.length) {
-//						level = 1;						
-//					}
-//					surface.saveState();
-//					state = NOT_INITED;
-//				}
-//			}
+			}
 		}
 	}
 	

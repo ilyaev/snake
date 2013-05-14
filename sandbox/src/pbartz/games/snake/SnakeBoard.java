@@ -13,6 +13,12 @@ public class SnakeBoard {
 	
 	int level = 1;
 	
+	final static int BOARDTYPE_DEMO = 1;
+	final static int BOARDTYPE_GAME = 2;
+	
+	public int boardType = BOARDTYPE_GAME;
+	
+	
 	final static int GAMEMODE_SOLO = 1;
 	final static int GAMEMODE_BATTLE = 2;
 	final static int GAMEMODE_SURVIVAL = 3;
@@ -198,6 +204,14 @@ public class SnakeBoard {
 
 	public boolean backAction() {
 		return false;
+	}
+
+	public int getScore() {
+		return -1;
+	}
+
+	public void refresh() {
+		// TODO Auto-generated method stub		
 	}
 	
 	

@@ -29,23 +29,22 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 		mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Biotype.ttf");
 		sContext = context;
 		sHolder = getHolder();
+		loadState();
 		gameBoard = new GameSnakeBoard(this);
 		startBoard = new StartSnakeBoard(this);
-		loadState();
+		
 		setBoard(startBoard);
 	}
-	
+
 	public void saveState() {
 		SharedPreferences prefs = sContext.getSharedPreferences("pbartz.games.snake", 0);
 		SharedPreferences.Editor editor = prefs.edit();
-		
-		editor.putInt("escape_level", gameBoard.level);		
 		editor.commit();
 	}
 	
 	public void loadState() {
 		SharedPreferences prefs = sContext.getSharedPreferences("pbartz.games.snake", 0);
-		gameBoard.level = prefs.getInt("escape_level", 1);
+		GameScore.initialize(prefs);
 	}
 	
 	public void setBoard(SnakeBoard nextBoard) {

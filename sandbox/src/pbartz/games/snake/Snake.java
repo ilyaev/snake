@@ -286,6 +286,10 @@ public class Snake {
 			board.gameOverCountdown = System.currentTimeMillis();
 			board.funnyText = "\"" + board.quote.nextQuote() + "\"\n\n" + board.quote.nextAuthor();
 			board.gameOver = 1;
+			
+			if (GameScore.updateScore(board.gameMode, board.gameLevel, board.getScore())) {
+				// high score!
+			}
 		}
 		
 		SnakeBug bug = board.bugs.getBugByRace(race); 
