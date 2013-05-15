@@ -54,4 +54,16 @@ public class GameScore {
 		return false;
 	}
 
+	public static void setSelectedLevel(int gameMode, int level) {
+		SharedPreferences.Editor editor = prefs.edit();
+		String key = "level_selected_" + Integer.toString(gameMode);
+		editor.putInt(key, level);		
+		editor.commit();
+	}
+	
+	public static int getSelectedLevel(int gameMode) {
+		String key = "level_selected_" + Integer.toString(gameMode);
+		return prefs.getInt(key, 1);
+	}
+
 }

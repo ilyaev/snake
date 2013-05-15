@@ -33,25 +33,32 @@ public class Slider {
 	boolean active = false;
 	private Rect mBounds;
 	private int actualItem = 0;
+	private int transparency = 0;
+	private long lastTimeStamp;
 	
-	public Slider(Typeface mFace) {
-		screenW = 480;
-		screenH = 800;
+	public Slider(Typeface mFace, int sWidth, int sHeight) {
+		screenW = sWidth;
+		screenH = sHeight;
+		
+		itemHeight = screenH / 4;
+		topY = (int)(screenH / 2.666);
+		
+		lastTimeStamp = System.currentTimeMillis();
 		
 		paint = new Paint();
 		paint.setARGB(200, 50, 50, 50);
 		
 		textPaint = new Paint();
-		textPaint.setTextSize(55);
+		textPaint.setTextSize((int)(screenH / 14.54));
 		textPaint.setColor(Color.WHITE);		
 		textPaint.setTypeface(mFace);
 		
 		smTextPaint = new Paint();
-		smTextPaint.setTextSize(30);
-		smTextPaint.setColor(Color.WHITE);		
+		smTextPaint.setTextSize((int)(screenH / 28));
+		smTextPaint.setARGB(0, 255,255,255);		
 		smTextPaint.setTypeface(mFace);
 		
-		textOffset = (int) ((itemHeight - 55) / 2);
+		textOffset = (int) ((itemHeight - (screenH / 14.54)) / 2);
 		
 		framePaint = new Paint();
 		framePaint.setColor(Color.WHITE);
@@ -78,7 +85,7 @@ public class Slider {
 			textOY[i] = (itemHeight - (bounds.height() / 5)) / 2;			
 		}
 		
-		offsetX = -300;
+		offsetX = (int)(screenH / 2.6666) * -1;
 		dX = (offsetX - 0) / maxIterations;		
 		
 		mBounds = new Rect();
@@ -109,6 +116,16 @@ public class Slider {
 			if (dX != 0 && iteration < maxIterations) {
 				offsetX -= dX;
 				iteration += 1;
+			}
+			
+			long timeDiff = System.currentTimeMillis() - lastTimeStamp;
+			
+			if (timeDiff > 3000 & transparency < 255) {
+				transparency += 5;
+				if (transparency > 255) {
+					transparency = 255;
+				}
+				smTextPaint.setAlpha(transparency);
 			}
 		}
 	}

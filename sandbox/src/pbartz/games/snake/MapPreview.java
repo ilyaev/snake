@@ -21,12 +21,16 @@ public class MapPreview {
 
 	private Paint fillPaint;
 	
+	int plus50 = 50;
+	
 	public MapPreview(int tLevel, SnakeBoard tBoard, Typeface mFace) {
 		level = tLevel;
 		board = tBoard;
 		
+		plus50 = (int)(board.sHeight / 16);
+		
 		scorePaint = new Paint();
-		scorePaint.setTextSize(35);
+		scorePaint.setTextSize((int)(board.sHeight / 23));
 		scorePaint.setTypeface(mFace);
 		scorePaint.setColor(Color.WHITE);
 		
@@ -48,17 +52,17 @@ public class MapPreview {
 	public void draw(Canvas tCanvas, int offsetX) {
 		currOffset = offsetX;
 		
-		if (leftX - offsetX > 480 || leftX - offsetX + width < 0) {
+		if (leftX - offsetX > board.sWidth || leftX - offsetX + width < 0) {
 			// skip
 		} else {		
 			tCanvas.drawRect(leftX - offsetX, topY, leftX - offsetX + width, topY + height, fillPaint);
 			tCanvas.drawRect(leftX - offsetX, topY, leftX - offsetX + width, topY + height, framePaint);
 
-			tCanvas.drawText(Integer.toString(level), leftX - offsetX + 5, topY+50, textPaint);
+			tCanvas.drawText(Integer.toString(level), leftX - offsetX + 5, topY+ plus50, textPaint);
 			if (GameScore.isLevelLocked(level)) {
-				tCanvas.drawText("Locked", leftX - offsetX + 5, topY + height + 50, scorePaint);
+				tCanvas.drawText("Locked", leftX - offsetX + 5, topY + height + plus50, scorePaint);
 			} else {
-				tCanvas.drawText("High Score: " + Integer.toString(GameScore.getScore(board.gameMode, level)), leftX - offsetX + 5, topY + height + 50, scorePaint);
+				tCanvas.drawText("High Score: " + Integer.toString(GameScore.getScore(board.gameMode, level)), leftX - offsetX + 5, topY + height + plus50, scorePaint);
 			}
 			
 		}
@@ -97,13 +101,9 @@ public class MapPreview {
 		
 		// set colors
 		textPaint = new Paint();
-		textPaint.setTextSize(55);
+		textPaint.setTextSize((int)(board.sHeight / 15));
 		textPaint.setColor(Color.WHITE);		
-		
-		textPaint = new Paint();
-		textPaint.setTextSize(55);
-		textPaint.setColor(Color.WHITE);		
-		
+
 		framePaint = new Paint();
 		framePaint.setColor(Color.WHITE);
 		framePaint.setStyle(Paint.Style.STROKE);
@@ -112,7 +112,6 @@ public class MapPreview {
 		paint.setARGB(100, 255, 0, 0);
 		
 		fillPaint = new Paint();
-		//fillPaint.setARGB(0, 0, 0, 0);
 		fillPaint.setARGB(220, 50, 50, 50);
 	}
 

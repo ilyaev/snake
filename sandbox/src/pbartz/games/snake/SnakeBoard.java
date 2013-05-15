@@ -214,5 +214,9 @@ public class SnakeBoard {
 		// TODO Auto-generated method stub		
 	}
 	
+	public void reselect() {
+		// TODO Auto-generated method stub		
+	}
+	
 	
 }

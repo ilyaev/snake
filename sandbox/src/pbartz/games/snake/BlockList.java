@@ -66,6 +66,16 @@ public class BlockList {
 		}
 	}
 	
+	public int getUnlockedCount() {
+		int result = 0;
+		for(int i = 0 ; i < items.size() ; i++) {
+			if (items.get(i).type == Block.BLOCK_KEYHOLE && items.get(i).isUnlocked == false) {
+				result += 1;
+			}
+		}
+		return result;
+	}
+	
 	public Block unlockFirstLockedSlot() {		
 		Block result = null;
 		if (items.size() > 0) {

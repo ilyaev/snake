@@ -33,10 +33,13 @@ public class LevelSlider {
 	private Paint textPaint;
 	private int actualItem = 0;
 	private int offsetTo = 0;
+	int screenW, screenH;
 	public boolean active = false;
+	private int between;
 	
-	public LevelSlider(SnakeBoard tBoard, Typeface mFace) {
-		
+	public LevelSlider(SnakeBoard tBoard, Typeface mFace, int sWidth, int sHeight) {
+		screenW = sWidth;
+		screenH = sHeight;
 		active = false;
 		
 		board = tBoard;
@@ -44,12 +47,12 @@ public class LevelSlider {
 		
 		transBlocks = new ArrayList<Block>();
 		
-		itemWidth = 400;
-		itemHeight = 600;
-		leftX = 40;
-		topY = 140;
+		itemWidth = (int)(screenW / 1.2);
+		itemHeight = (int)(screenH / 1.333333);
+		leftX = (int)(screenW / 12);
+		topY = (int)(screenH / 5.714);
 		
-		int between = 20;
+		between = (int)(screenW / 24);
 		int index = 0;
 		
 		for(int i = 1 ; i <= SnakeLevels.levels.length ; i++) {
@@ -63,7 +66,7 @@ public class LevelSlider {
 		blockPaint.setARGB(255, 255, 255, 255);
 		
 		textPaint = new Paint();
-		textPaint.setTextSize(30);
+		textPaint.setTextSize((int)(screenH / 27));
 		textPaint.setTypeface(mFace);
 		textPaint.setColor(Color.WHITE);	
 		
@@ -104,7 +107,7 @@ public class LevelSlider {
 		
 		for(int i = 0 ; i < levels.size() ; i++) {
 			int left = Math.max(0, levels.get(i).getLeft());
-			int right = Math.min(480, levels.get(i).getRight());
+			int right = Math.min(screenW, levels.get(i).getRight());
 			
 			if ((right - left) > maxW) {
 				maxW = right - left;
@@ -114,11 +117,12 @@ public class LevelSlider {
 		
 		if (currentItem == maxItem && Math.abs(offsetX - staticOffset) < 5) {
 			if (!GameScore.isLevelLocked(levels.get(currentItem).level)) {
-				result = levels.get(currentItem).level;
+				result = levels.get(currentItem).level;				
 			}
 		}
 
 		currentItem  = maxItem;
+		GameScore.setSelectedLevel(board.gameMode, levels.get(currentItem).level);
 		
 		
 		offsetTo  = levels.get(maxItem).getLeft() - levels.get(0).getLeft();
@@ -207,7 +211,7 @@ public class LevelSlider {
 				int perc = (offsetX - staticOffset);
 	
 				if (perc < 0) {
-					perc = 420 + perc;
+					perc = itemWidth + between + perc;
 				}
 				
 				float x = block.rx;
@@ -237,7 +241,7 @@ public class LevelSlider {
 			
 			for(int i = 0 ; i < levels.size() ; i++) {
 				int left = Math.max(0, levels.get(i).getLeft());
-				int right = Math.min(480, levels.get(i).getRight());
+				int right = Math.min(screenW, levels.get(i).getRight());
 				
 				if ((right - left) > maxW) {
 					maxW = right - left;
@@ -264,6 +268,22 @@ public class LevelSlider {
 				switchTransition(transFrom, transTo);
 			}
 		}		
+	}
+
+	public void selectLevel(int selectedLevel) {
+		synchronized (this) {
+			if ((selectedLevel - 1) < 0) selectedLevel = 1;
+			
+			currentItem = (selectedLevel - 1);
+			actualItem = (selectedLevel - 1);
+			
+			staticOffset = levels.get(currentItem).getLeft() - levels.get(0).getLeft();
+			offsetX = staticOffset;
+			
+			setOffset((int)(screenW / 1.6));
+			iteration = 0;
+			dX = ((int)(screenW / 1.6)) / maxIterations;
+		}
 	}
 	
 }

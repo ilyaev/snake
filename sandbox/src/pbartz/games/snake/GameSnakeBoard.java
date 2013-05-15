@@ -81,6 +81,16 @@ public class GameSnakeBoard extends SnakeBoard {
 		walls = new BlockList(this);
 	}
 	
+	public int getActiveRivalsCount() {
+		int result = 0;
+		for(int i = 0 ; i < snakes.size() ; i++) {
+			if (snakes.get(i).active == 1 && snakes.get(i).race != Snake.RACE_PLAYER) {
+				result += 1;
+			}
+		}
+		return result;
+	}
+	
 	public void drawMultilineText(String str, int x, int y, Paint paint, Canvas canvas) {
 	    int      lineHeight = 0;
 	    int      yoffset    = 0;
@@ -127,7 +137,9 @@ public class GameSnakeBoard extends SnakeBoard {
 				if (gameOver == 1) {
 					drawGameOver();
 				} else {
-					canvas.drawRect(0, 0, sWidth - 1, sHeight - cpHeight, whiteFramePaint);
+					if (canvas != null) {
+						canvas.drawRect(0, 0, sWidth - 1, sHeight - cpHeight, whiteFramePaint);
+					}
 				}
 				
 			} finally {
@@ -155,9 +167,13 @@ public class GameSnakeBoard extends SnakeBoard {
 			
 			canvas.drawText(scoreStr, panel.left + (panel.width() - scoreBounds.width()) / 2, panel.top + 30 + scorePaint.getTextSize() + 5, scorePaint);
 			
-//			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
-//				drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
-//			}		
+			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
+				
+				Rect hsBounds = new Rect();
+				funnyTextPaint.getTextBounds(funnyText, 0, funnyText.length(), hsBounds);
+				canvas.drawText(funnyText, panel.left + (panel.width() - hsBounds.width()) / 2, (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint);
+				//drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
+			}		
 			
 			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
 				if (roundWon) {
@@ -271,13 +287,24 @@ public class GameSnakeBoard extends SnakeBoard {
 			}
 		}
 		
+		boolean doSpawn = false;
+		
+		if (gameMode == GAMEMODE_BATTLE && System.currentTimeMillis() - lastSnakeSpawn > 10000) {
+			lastSnakeSpawn = System.currentTimeMillis();
+			if (getActiveRivalsCount() < 3	&& walls.getUnlockedCount() > getActiveRivalsCount()) {
+				doSpawn = true;
+			}
+		}
+		
 		if (gameMode == GAMEMODE_SURVIVAL &&  System.currentTimeMillis() - lastSnakeSpawn > 10000 && snakes.size() < 10) {
+			doSpawn = true;
+		}
+		
+		if (doSpawn) {
 			Random r = new Random();
 			int y = r.nextInt(cnVertical - 1) + 1;
-			if (!oMap[1][y]) {
-				
-				purgeSnakes();
-				
+			if (!oMap[1][y]) {				
+				purgeSnakes();				
 				Snake nSnake = new Snake(1, y, this);
 				nSnake.race = r.nextInt(1000) + 10;
 				nSnake.live = 1;
@@ -300,16 +327,17 @@ public class GameSnakeBoard extends SnakeBoard {
 				break;
 			}
 		}
+	
 
 		if (isExit == true && gameOver == 0) {
 			roundWon = true;
 			
 			if (GameScore.updateScore(gameMode, gameLevel, getScore())) {
 				// high score!
+				funnyText = " High Score! ";
+			} else {
+				funnyText = "";
 			}
-				
-			
-			
 			
 			gameLevel += 1;
 			level = gameLevel;
@@ -326,13 +354,14 @@ public class GameSnakeBoard extends SnakeBoard {
 				surface.startBoard.refresh();
 			}
 			
+			GameScore.setSelectedLevel(gameMode, gameLevel);
+			
 			surface.saveState();
 			
 			
 			snakes.get(0).currentCmd = 0;
 			snakes.get(0).live = 0;
 			gameOverCountdown = System.currentTimeMillis();
-			funnyText = " \n ";
 			gameOver = 1;
 			for(int i = 0 ; i < snakes.get(0).body.items.size() ; i++) {
 				snakes.get(0).body.items.get(i).iteration = 0;
@@ -376,7 +405,8 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		funnyTextPaint = new Paint();
 		funnyTextPaint.setARGB(255, 255, 255, 255);
-		funnyTextPaint.setTextSize(sHeight / 32);		
+		funnyTextPaint.setTextSize(sHeight / 20);
+		funnyTextPaint.setTypeface(surface.mFace);
 		
 		
 		snakes.clear();
@@ -556,6 +586,12 @@ public class GameSnakeBoard extends SnakeBoard {
 					bugs.spawnBug(curRace);
 					snakes.add(tSnake);
 				}
+				
+				if (gameMode == GAMEMODE_SURVIVAL && curRace == 2) {
+					bugs.spawnBug(curRace);
+					snakes.add(tSnake);
+				}
+				
 				curRace += 1;
 			}
 
@@ -583,6 +619,7 @@ public class GameSnakeBoard extends SnakeBoard {
 				state = SnakeBoard.NOT_INITED;
 			} else if (btnMenu.rect.contains((int)event.getX(), (int)event.getY())) {
 				surface.setBoard(surface.startBoard);
+				surface.startBoard.reselect();
 			} else if (btnRate.rect.contains((int)event.getX(), (int)event.getY())) {
 				Uri uri = Uri.parse("market://details?id=" + surface.sContext.getPackageName());
 			    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);

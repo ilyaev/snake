@@ -48,7 +48,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	}
 	
 	public void setBoard(SnakeBoard nextBoard) {
-		synchronized (sHolder) {
+		synchronized (this) {
 			board = nextBoard;
 		}
 	}

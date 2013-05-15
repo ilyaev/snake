@@ -41,10 +41,7 @@ public class StartSnakeBoard extends SnakeBoard {
 	public StartSnakeBoard(SnakeBoxSurface tSurface) {
 		boardType = BOARDTYPE_DEMO;
 		grayPaint = new Paint();
-		grayPaint.setARGB(255, 200, 200, 200);
-		
-		slider = new Slider(tSurface.mFace);
-		levelSlider = new LevelSlider(this, tSurface.mFace);
+		grayPaint.setARGB(255, 200, 200, 200);	
 		
 		cubes = new ArrayList<SnakePiece>();
 		
@@ -60,6 +57,10 @@ public class StartSnakeBoard extends SnakeBoard {
 	
 	public void refresh() {
 		levelSlider.refreshPreviews();
+	}
+	
+	public void reselect() {
+		levelSlider.selectLevel(GameScore.getSelectedLevel(gameMode));	
 	}
 	
 	public void draw(Canvas tCanvas) {
@@ -168,6 +169,9 @@ public class StartSnakeBoard extends SnakeBoard {
 	public void initialize() {
 		sWidth = canvas.getWidth();
 		sHeight = canvas.getHeight();
+		
+		slider = new Slider(surface.mFace, sWidth, sHeight);
+		levelSlider = new LevelSlider(this, surface.mFace, sWidth, sHeight);
 		
 //		sWidth = 320;
 //		sHeight = 480;
@@ -355,13 +359,7 @@ public class StartSnakeBoard extends SnakeBoard {
 			mapAction = levelSlider.touchEnd();
 			
 			if (menuAction >= 0) {
-				if (levelSlider.active == false) {
-					levelSlider.active = true;
-					levelSlider.offsetX -= 300;
-					levelSlider.iteration = 0;
-					levelSlider.dX = (-300) / levelSlider.maxIterations;				
-					
-					slider.active = false;
+				if (levelSlider.active == false) {					
 					switch (menuAction) {
 						case StartSnakeBoard.ACTION_SOLO:
 							gameMode = SnakeBoard.GAMEMODE_SOLO;
@@ -373,6 +371,9 @@ public class StartSnakeBoard extends SnakeBoard {
 							gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
 							break;	
 					}
+					levelSlider.active = true;
+					levelSlider.selectLevel(GameScore.getSelectedLevel(gameMode));					
+					slider.active = false;
 				}
 			}
 			
@@ -404,6 +405,9 @@ public class StartSnakeBoard extends SnakeBoard {
 				oMap[x][y] = false;
 			}
 		}
+		
+		oMap[13][3] = true;
+		oMap[12][3] = true;
 		
 		for(int i = 0 ; i < snakes.size() ; i++) {
 			if (snakes.get(i).active == 1) {
