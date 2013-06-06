@@ -31,6 +31,8 @@ public class Button {
 		fillPaint.setARGB(200, 0,0,0);
 	}
 	
+	
+	
 	public Button(String string, Typeface mFace) {
 		caption = string;
 		paint = new Paint();
@@ -48,6 +50,10 @@ public class Button {
 	public void setPosition(int pX, int pY) {
 		rect.left = pX;
 		rect.top = pY;
+	}
+	
+	public void setText(String newCaption) {
+		caption = newCaption;
 	}
 	
 	public void setSize(int sW, int sH) {

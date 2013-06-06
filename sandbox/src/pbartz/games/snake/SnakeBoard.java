@@ -16,6 +16,12 @@ public class SnakeBoard {
 	final static int BOARDTYPE_DEMO = 1;
 	final static int BOARDTYPE_GAME = 2;
 	
+	final static int CONTROL_TYPE_DPAD = 1;
+	final static int CONTROL_TYPE_RELATIVE = 2;
+	final static int CONTROL_TYPE_SWIPE = 3;
+	
+	public int controlType = CONTROL_TYPE_DPAD;
+	
 	public int boardType = BOARDTYPE_GAME;
 	
 	
@@ -67,7 +73,8 @@ public class SnakeBoard {
 	
 	boolean oMap[][];
 	
-	public Canvas canvas = null;
+	public volatile Canvas canvas = null;
+	boolean isPaused = false;
 	
 	long lastTimeStamp = 0;
 
@@ -76,6 +83,8 @@ public class SnakeBoard {
 	long freezeStartTime = 0;
 
 	public int gameLevel = 0;
+
+	public Button btnControl;
 	
 	public void draw(Canvas tCanvas) {
 		canvas = tCanvas;

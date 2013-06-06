@@ -32,6 +32,19 @@ public class GameScore {
 		return prefs.getInt(key, 0);
 	}
 	
+	public static boolean updateControlType(int mode) {
+		SharedPreferences.Editor editor = prefs.edit();
+		String key = "controlType";
+		editor.putInt(key, mode);		
+		editor.commit();
+		return true;
+	}
+	
+	public static int getControlType() {
+		String key = "controlType";
+		return prefs.getInt(key, 1);
+	}
+	
 	public static void clearCache() {
 		
 	}

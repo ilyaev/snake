@@ -53,6 +53,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		snakeQ = new ArrayList<Integer>();
 		
 		lastShowTimeStamp = System.currentTimeMillis();
+		btnControl = new Button("CONTROL : D-PAD", tSurface.mFace);
 	}
 	
 	public void refresh() {
@@ -88,7 +89,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		slider.render(canvas);
 		
 		levelSlider.draw(canvas);
-		
+		btnControl.draw(canvas);		
 		
 	}
 	
@@ -213,7 +214,13 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		state = INITED;
 		
-		lastTimeStamp = 0;		
+		lastTimeStamp = 0;
+		
+		
+		
+		btnControl.setPosition(1, sHeight - (int)(sHeight / 7.61));
+		btnControl.setSize(sWidth - 5, sHeight / 10);
+		btnControl.setFontSize(sHeight / 25);
 		
 		addSnakes();
 		rebuildObstMap();
@@ -341,8 +348,19 @@ public class StartSnakeBoard extends SnakeBoard {
 
 	public void processTouch(MotionEvent event) {
 		
+		if (btnControl.rect.contains((int)event.getX(), (int)event.getY())) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				surface.rotateControlType();
+			}
+			return;
+		}
+		
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			lastTX = event.getX();
+			if (btnControl.rect.contains((int)event.getX(), (int)event.getY())) {
+				btnControl.setText("CONTROL : D-PAD");
+				return;
+			}
 		}
 		
 		if (event.getAction() == MotionEvent.ACTION_MOVE) {
@@ -352,6 +370,10 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		
 		if (event.getAction() == MotionEvent.ACTION_UP) {
+			
+			
+			
+			
 			if (menuAction < 0) {
 				menuAction = slider.touchEnd();
 			}

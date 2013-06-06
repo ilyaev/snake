@@ -260,7 +260,29 @@ public class Snake {
 	}
 	
 	public void setCommand(int cmd) {
-		currentCmd = cmd;
+		int tX = snakeX;
+		int tY = snakeY;
+		
+		switch (cmd) {		
+			case CMD_LEFT:
+				tX -= 1;
+				break;
+			case CMD_RIGHT:
+				tX += 1;
+				break;
+			case CMD_UP:
+				tY -= 1;
+				break;
+			case CMD_DOWN:
+				tY += 1;
+				break;		
+		}
+		
+		if (body.items.get(1).cellX == tX && body.items.get(1).cellY == tY) {
+			// skip
+		} else {
+			currentCmd = cmd;
+		}
 	}
 
 	public void deactivateSnake() {		

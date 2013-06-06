@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class GameSnakeBoard extends SnakeBoard {
@@ -23,19 +24,24 @@ public class GameSnakeBoard extends SnakeBoard {
 	
 	long lastSnakeSpawn = 0;
 	
-	int btnLeftState, btnRightState, btnUpState, btnDownState = -1;
+	float touchX = -1;
+	float touchY = -1;
 	
-	Path bPathLeft, bPathRight, bPathUp, bPathDown;
+	int btnLeftStateR, btnRightStateR, btnLeftState, btnRightState, btnUpState, btnDownState = -1;
 	
-	Rect btnLeft;
-	Rect btnRight;
+	Path bPathLeft, bPathRight, bPathUp, bPathDown, bPathLeftR, bPathRightR;
+	
+	Rect btnLeft, btnLeftR;
+	Rect btnRight, btnRightR;
 	Rect btnUp;
 	Rect btnDown;
+	
+	Rect fieldRect, controlRect;
 	
 	Paint textPaint;
 	Paint scorePaint;
 	
-	Button btnReplay, btnNext, btnMenu;
+	Button btnReplay, btnNext, btnMenu, btnControl;
 	
 	Paint fillPaint;
 	
@@ -51,6 +57,8 @@ public class GameSnakeBoard extends SnakeBoard {
 	Paint funnyTextPaint;
 
 	private Button btnRate;
+
+	private Button btnResume;
 
 	public GameSnakeBoard(SnakeBoxSurface tSurface) {
 	
@@ -68,10 +76,13 @@ public class GameSnakeBoard extends SnakeBoard {
 		scorePaint.setARGB(255, 255, 255, 255);		
 		
 		btnReplay = new Button("AGAIN", tSurface.mFace);
+		btnControl = new Button("CONTROL: RELATIVE", tSurface.mFace);
 		btnMenu = new Button("MENU", tSurface.mFace);	
 		btnNext = new Button("NEXT", tSurface.mFace);
 		
 		btnRate = new Button("RATE APP", tSurface.mFace);
+		
+		btnResume = new Button("RESUME", tSurface.mFace);
 		
 		fillPaint = new Paint();
 		fillPaint.setARGB(170, 0,0,0);
@@ -135,10 +146,12 @@ public class GameSnakeBoard extends SnakeBoard {
 				walls.draw(canvas);
 				
 				if (gameOver == 1) {
+					isPaused = false;
 					drawGameOver();
 				} else {
 					if (canvas != null) {
 						canvas.drawRect(0, 0, sWidth - 1, sHeight - cpHeight, whiteFramePaint);
+						drawPause();
 					}
 				}
 				
@@ -148,6 +161,12 @@ public class GameSnakeBoard extends SnakeBoard {
 		}
 	}
 	
+	private void drawPause() {
+		if (isPaused) {
+			btnResume.draw(canvas);
+		}
+	}
+
 	private void drawGameOver() {
 		if (System.currentTimeMillis() - gameOverCountdown > 1000) {		
 			int pWidth = (int)(sWidth - 20);
@@ -213,110 +232,142 @@ public class GameSnakeBoard extends SnakeBoard {
 		if (canvas == null || btnLeft == null || whiteFramePaint == null) {
 			// error!
 		} else {
-			canvas.drawRect(btnLeft, whiteFramePaint);
-			canvas.drawRect(btnRight, whiteFramePaint);
 			
-			canvas.drawRect(btnUp, whiteFramePaint);
-			canvas.drawRect(btnDown, whiteFramePaint);	
+			if (controlType == CONTROL_TYPE_DPAD) {
 			
-			
-			if (btnLeftState == MotionEvent.ACTION_DOWN || btnLeftState == MotionEvent.ACTION_MOVE) {
-				canvas.drawPath(bPathLeft, buttonPressedPaint);
-			} else {
-				canvas.drawPath(bPathLeft, whiteFramePaint);
+				canvas.drawRect(btnLeft, whiteFramePaint);
+				canvas.drawRect(btnRight, whiteFramePaint);
+				
+				canvas.drawRect(btnUp, whiteFramePaint);
+				canvas.drawRect(btnDown, whiteFramePaint);	
+				
+				
+				if (btnLeftState == MotionEvent.ACTION_DOWN || btnLeftState == MotionEvent.ACTION_MOVE) {
+					canvas.drawPath(bPathLeft, buttonPressedPaint);
+				} else {
+					canvas.drawPath(bPathLeft, whiteFramePaint);
+				}
+				
+				if (btnRightState == MotionEvent.ACTION_DOWN || btnRightState == MotionEvent.ACTION_MOVE) {
+					canvas.drawPath(bPathRight, buttonPressedPaint);
+				} else {
+					canvas.drawPath(bPathRight, whiteFramePaint);
+				}
+				
+				if (btnUpState == MotionEvent.ACTION_DOWN || btnUpState == MotionEvent.ACTION_MOVE) {
+					canvas.drawPath(bPathUp, buttonPressedPaint);
+				} else {
+					canvas.drawPath(bPathUp, whiteFramePaint);
+				}
+				
+				if (btnDownState == MotionEvent.ACTION_DOWN || btnDownState == MotionEvent.ACTION_MOVE) {
+					canvas.drawPath(bPathDown, buttonPressedPaint);
+				} else {
+					canvas.drawPath(bPathDown, whiteFramePaint);
+				}
 			}
 			
-			if (btnRightState == MotionEvent.ACTION_DOWN || btnRightState == MotionEvent.ACTION_MOVE) {
-				canvas.drawPath(bPathRight, buttonPressedPaint);
-			} else {
-				canvas.drawPath(bPathRight, whiteFramePaint);
+			if (controlType == CONTROL_TYPE_RELATIVE) {
+				canvas.drawRect(btnLeftR, whiteFramePaint);
+				canvas.drawRect(btnRightR, whiteFramePaint);
+				
+				if (btnLeftStateR == MotionEvent.ACTION_DOWN || btnLeftStateR == MotionEvent.ACTION_MOVE) {
+					canvas.drawPath(bPathLeftR, buttonPressedPaint);
+				} else {
+					canvas.drawPath(bPathLeftR, whiteFramePaint);
+				}
+				
+				if (btnRightStateR == MotionEvent.ACTION_DOWN || btnRightStateR == MotionEvent.ACTION_MOVE) {
+					canvas.drawPath(bPathRightR, buttonPressedPaint);
+				} else {
+					canvas.drawPath(bPathRightR, whiteFramePaint);
+				}
 			}
 			
-			if (btnUpState == MotionEvent.ACTION_DOWN || btnUpState == MotionEvent.ACTION_MOVE) {
-				canvas.drawPath(bPathUp, buttonPressedPaint);
-			} else {
-				canvas.drawPath(bPathUp, whiteFramePaint);
+			if (controlType == CONTROL_TYPE_SWIPE) {
+				canvas.drawRect(controlRect, whiteFramePaint);
+				if (touchX != -1) {
+					canvas.drawCircle(touchX, touchY, sHeight / 16, buttonPressedPaint);
+				} else {
+					canvas.drawText("SWIPE HERE", 15, controlRect.top + 60, textPaint);
+				}
 			}
 			
-			if (btnDownState == MotionEvent.ACTION_DOWN || btnDownState == MotionEvent.ACTION_MOVE) {
-				canvas.drawPath(bPathDown, buttonPressedPaint);
-			} else {
-				canvas.drawPath(bPathDown, whiteFramePaint);
-			}
 		}
 	}
 
 	public void calculate(Canvas tCanvas) {
-		canvas = tCanvas;
-		
-		long timeDiff = System.currentTimeMillis() - lastTimeStamp;
-
-		if (state == NOT_INITED) {
-			initialize();
-		}
-		
-		if (timeDiff >= defaultSpeed) {
+		if (!isPaused) {
+			canvas = tCanvas;
+			
+			long timeDiff = System.currentTimeMillis() - lastTimeStamp;
+	
+			if (state == NOT_INITED) {
+				initialize();
+			}
+			
+			if (timeDiff >= defaultSpeed) {
+				
+				for(int i = 0 ; i < snakes.size() ; i++) {
+					snakes.get(i).calculate();
+					rebuildObstMap();
+				}			
+				
+				lastTimeStamp += timeDiff;
+				
+				bugs.processIntercection();
+				
+				checkExit();
+			}
 			
 			for(int i = 0 ; i < snakes.size() ; i++) {
-				snakes.get(i).calculate();
-				rebuildObstMap();
-			}			
-			
-			lastTimeStamp += timeDiff;
-			
-			bugs.processIntercection();
-			
-			checkExit();
-		}
-		
-		for(int i = 0 ; i < snakes.size() ; i++) {
-			snakes.get(i).body.calculate();
-		}
-		
-		bugs.calculate();
-		
-		if (booms != null) {
-			for(int i = 0 ; i < booms.size() ; i++) {
-				booms.get(i).calculate();
+				snakes.get(i).body.calculate();
 			}
-		}
-		
-		if (freezeStartTime != 0) {
-			if (System.currentTimeMillis() - freezeStartTime  > 5000) {
-				unFreezeSnakes();
+			
+			bugs.calculate();
+			
+			if (booms != null) {
+				for(int i = 0 ; i < booms.size() ; i++) {
+					booms.get(i).calculate();
+				}
 			}
-		}
-		
-		boolean doSpawn = false;
-		
-		if (gameMode == GAMEMODE_BATTLE && System.currentTimeMillis() - lastSnakeSpawn > 10000) {
-			lastSnakeSpawn = System.currentTimeMillis();
-			if (getActiveRivalsCount() < 3	&& walls.getUnlockedCount() > getActiveRivalsCount()) {
+			
+			if (freezeStartTime != 0) {
+				if (System.currentTimeMillis() - freezeStartTime  > 5000) {
+					unFreezeSnakes();
+				}
+			}
+			
+			boolean doSpawn = false;
+			
+			if (gameMode == GAMEMODE_BATTLE && System.currentTimeMillis() - lastSnakeSpawn > 10000) {
+				lastSnakeSpawn = System.currentTimeMillis();
+				if (getActiveRivalsCount() < 3	&& walls.getUnlockedCount() > getActiveRivalsCount()) {
+					doSpawn = true;
+				}
+			}
+			
+			if (gameMode == GAMEMODE_SURVIVAL &&  System.currentTimeMillis() - lastSnakeSpawn > 10000 && snakes.size() < 10) {
 				doSpawn = true;
 			}
-		}
-		
-		if (gameMode == GAMEMODE_SURVIVAL &&  System.currentTimeMillis() - lastSnakeSpawn > 10000 && snakes.size() < 10) {
-			doSpawn = true;
-		}
-		
-		if (doSpawn) {
-			Random r = new Random();
-			int y = r.nextInt(cnVertical - 1) + 1;
-			if (!oMap[1][y]) {				
-				purgeSnakes();				
-				Snake nSnake = new Snake(1, y, this);
-				nSnake.race = r.nextInt(1000) + 10;
-				nSnake.live = 1;
-				bugs.spawnBug(nSnake.race);
-				nSnake.body.grow(SnakeBug.BUG_TRIPPLE);
-				snakes.add(nSnake);
-				lastSnakeSpawn = System.currentTimeMillis();
+			
+			if (doSpawn) {
+				Random r = new Random();
+				int y = r.nextInt(cnVertical - 1) + 1;
+				if (!oMap[1][y]) {				
+					purgeSnakes();				
+					Snake nSnake = new Snake(1, y, this);
+					nSnake.race = r.nextInt(1000) + 10;
+					nSnake.live = 1;
+					bugs.spawnBug(nSnake.race);
+					nSnake.body.grow(SnakeBug.BUG_TRIPPLE);
+					snakes.add(nSnake);
+					lastSnakeSpawn = System.currentTimeMillis();
+				}
 			}
-		}
-		
-		walls.calculate();
-		
+			
+			walls.calculate();
+		}		
 	}
 
 	private void checkExit() {
@@ -372,8 +423,12 @@ public class GameSnakeBoard extends SnakeBoard {
 	}
 	
 	private void initialize() {
+		isPaused = false;
 		sWidth = canvas.getWidth();
 		sHeight = canvas.getHeight();
+		
+		touchX = -1;
+		touchY = -1;
 		
 		roundWon = false;
 		
@@ -390,6 +445,10 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnReplay.setSize(sWidth / 2 - 5, sHeight / 8);		
 		btnReplay.setFontSize(sHeight / 20);
 		
+		btnControl.setPosition(1, sHeight - (int)(sHeight / 7.61));
+		btnControl.setSize(sWidth - 1, sHeight / 8);
+		btnControl.setFontSize(sHeight / 20);
+		
 		btnNext.setPosition(1, sHeight - (int)(sHeight / 7.61));
 		btnNext.setSize(sWidth / 2 - 5, sHeight / 8);		
 		btnNext.setFontSize(sHeight / 20);
@@ -402,6 +461,10 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnRate.setPosition((int)(sWidth / 4.8), sHeight - (sHeight / 8)*3);
 		btnRate.setSize((int)(sWidth / 1.6 - 5), sHeight / 8);
 		btnRate.setFontSize(sHeight / 20);
+		
+		btnResume.setPosition((int)(sWidth / 4.8), sHeight - (sHeight / 2));
+		btnResume.setSize((int)(sWidth / 1.6 - 5), sHeight / 8);
+		btnResume.setFontSize(sHeight / 20);
 		
 		funnyTextPaint = new Paint();
 		funnyTextPaint.setARGB(255, 255, 255, 255);
@@ -458,6 +521,13 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnLeft = new Rect(0, sHeight - cpHeight, btnWidth, sHeight - 1);
 		btnRight = new Rect(sWidth - btnWidth, sHeight - cpHeight, sWidth - 1, sHeight - 1);
 		
+		
+		int btnWidthR = (int) sWidth / 2;
+
+		btnLeftR = new Rect(0, sHeight - cpHeight, btnWidthR, sHeight - 1);
+		btnRightR = new Rect(sWidth - btnWidthR, sHeight - cpHeight, sWidth - 1, sHeight - 1);
+		
+		
 		btnUp = new Rect(btnWidth, sHeight - cpHeight, btnWidth + btnWidth, (int) (sHeight - cpHeight / 2));
 		btnDown = new Rect(btnWidth, sHeight - (int) (cpHeight / 2), btnWidth + btnWidth, sHeight - 1);
 		
@@ -481,6 +551,8 @@ public class GameSnakeBoard extends SnakeBoard {
 				
 		}
 		
+		fieldRect = new Rect(0, 0, sWidth - 1, sHeight - cpHeight);
+		controlRect = new Rect(0, sHeight - cpHeight, sWidth - 1, sHeight - 1);
 		rebuildObstMap();	
 	}	
 	
@@ -538,9 +610,38 @@ public class GameSnakeBoard extends SnakeBoard {
 		bPathDown.lineTo(btnDown.left + x2Down,  btnDown.top + y1Down);
 		bPathDown.lineTo(btnDown.left + x1Down,  btnDown.top + y1Down);		
 		
+		// relative buttons;
+		
+		x1Left = btnLeftR.width() / 5;
+		x2Left = (btnLeftR.width() / 5) * 4;
+		
+		y1Left = btnLeftR.height() / 6;
+		y2Left = (btnLeftR.height() / 6) * 5;
+		y3Left = btnLeftR.height() / 2;
+		
+		bPathLeftR = new Path();
+		bPathLeftR.moveTo(btnLeftR.left + x1Left, btnLeftR.top + y3Left);
+		bPathLeftR.lineTo(btnLeftR.left + x2Left,  btnLeftR.top + y1Left);
+		bPathLeftR.lineTo(btnLeftR.left + x2Left,  btnLeftR.top + y2Left);
+		bPathLeftR.lineTo(btnLeftR.left + x1Left,  btnLeftR.top + y3Left);
+		
+		x1Right = (btnRightR.width() / 5) * 4;
+		x2Right = btnRightR.width() / 5;
+		
+		y2Right = btnRightR.height() / 6;
+		y1Right = (btnRightR.height() / 6) * 5;
+		y3Right = btnRightR.height() / 2;
+		
+		bPathRightR = new Path();
+		bPathRightR.moveTo(btnRightR.left + x1Right, btnRightR.top + y3Right);
+		bPathRightR.lineTo(btnRightR.left + x2Right,  btnRightR.top + y1Right);
+		bPathRightR.lineTo(btnRightR.left + x2Right,  btnRightR.top + y2Right);
+		bPathRightR.lineTo(btnRightR.left + x1Right,  btnRightR.top + y3Right);
 		
 		btnLeftState = -1;
 		btnRightState = -1;
+		btnLeftStateR = -1;
+		btnRightStateR = -1;
 		btnUpState = -1;
 		btnDownState = -1;
 	}
@@ -632,22 +733,114 @@ public class GameSnakeBoard extends SnakeBoard {
 		} else {
 			
 			btnRightState = -1;
+			btnRightStateR = -1;
 			btnUpState = -1;
 			btnDownState = -1;
 			btnLeftState = -1;
+			btnLeftStateR = -1;
 			
-			if (btnLeft.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_RIGHT) {
-				btnLeftState = event.getAction();
-				snakes.get(0).setCommand(Snake.CMD_LEFT);
-			} else if (btnRight.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_LEFT) {
-				btnRightState = event.getAction();
-				snakes.get(0).setCommand(Snake.CMD_RIGHT);
-			} else if (btnUp.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_DOWN) {
-				btnUpState = event.getAction();
-				snakes.get(0).setCommand(Snake.CMD_UP);
-			} else if (btnDown.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_UP) {
-				btnDownState = event.getAction();
-				snakes.get(0).setCommand(Snake.CMD_DOWN);
+			if (controlType == CONTROL_TYPE_DPAD) {
+				if (btnLeft.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_RIGHT) {
+					btnLeftState = event.getAction();
+					snakes.get(0).setCommand(Snake.CMD_LEFT);
+				} else if (btnRight.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_LEFT) {
+					btnRightState = event.getAction();
+					snakes.get(0).setCommand(Snake.CMD_RIGHT);
+				} else if (btnUp.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_DOWN) {
+					btnUpState = event.getAction();
+					snakes.get(0).setCommand(Snake.CMD_UP);
+				} else if (btnDown.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_UP) {
+					btnDownState = event.getAction();
+					snakes.get(0).setCommand(Snake.CMD_DOWN);
+				}
+			}
+			
+			if (controlType == CONTROL_TYPE_RELATIVE && event.getAction() == MotionEvent.ACTION_DOWN) {
+				if (btnLeftR.contains((int)event.getX(), (int)event.getY())) {
+					btnLeftStateR = event.getAction();
+					
+					switch (snakes.get(0).currentCmd)  {
+					
+					case Snake.CMD_LEFT:
+						snakes.get(0).setCommand(Snake.CMD_DOWN);
+						break;
+					case Snake.CMD_RIGHT:
+						snakes.get(0).setCommand(Snake.CMD_UP);
+						break;
+					case Snake.CMD_UP:
+						snakes.get(0).setCommand(Snake.CMD_LEFT);
+						break;
+					case Snake.CMD_DOWN:
+						snakes.get(0).setCommand(Snake.CMD_RIGHT);
+						break;						
+					
+					}
+					
+					
+				} else if (btnRightR.contains((int)event.getX(), (int)event.getY())) {
+					btnRightStateR = event.getAction();
+					switch (snakes.get(0).currentCmd)  {					
+						case Snake.CMD_LEFT:
+							snakes.get(0).setCommand(Snake.CMD_UP);
+							break;
+						case Snake.CMD_RIGHT:
+							snakes.get(0).setCommand(Snake.CMD_DOWN);
+							break;
+						case Snake.CMD_UP:
+							snakes.get(0).setCommand(Snake.CMD_RIGHT);
+							break;
+						case Snake.CMD_DOWN:
+							snakes.get(0).setCommand(Snake.CMD_LEFT);
+							break;
+					}
+				}
+			}
+			
+			if (controlType == CONTROL_TYPE_SWIPE) {
+				
+				if (controlRect.contains((int)event.getX(), (int)event.getY())) {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						touchX = event.getX();
+						touchY = event.getY();
+					}
+				}
+
+				if (event.getAction() == MotionEvent.ACTION_UP) {
+					touchX = -1;
+					touchY = -1;
+				}
+			
+				if (event.getAction() == MotionEvent.ACTION_MOVE && touchX != -1) {
+					float deltaX = event.getX() - touchX;
+					float deltaY = event.getY() - touchY;
+					
+					Log.v("SNAKE", "deltaxy: " + Float.toString(deltaX) + " ; " + Float.toString(deltaY));
+					
+					if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+						if (deltaX > 0) {
+							snakes.get(0).setCommand(Snake.CMD_RIGHT);
+						} else {
+							snakes.get(0).setCommand(Snake.CMD_LEFT);
+						}
+						touchX = event.getX();
+						touchY = event.getY();
+					} else if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+						if (deltaY > 0) {
+							snakes.get(0).setCommand(Snake.CMD_DOWN);
+						} else {
+							snakes.get(0).setCommand(Snake.CMD_UP);
+						}
+						touchX = event.getX();
+						touchY = event.getY();
+					}
+				}
+				
+			}
+			
+			if (fieldRect.contains((int)event.getX(), (int)event.getY())) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					isPaused = !isPaused;
+				}
 			}
 		}
 	}

@@ -27,6 +27,7 @@ public class SnakeBox extends Activity implements OnTouchListener {
 	@Override
 	public void onBackPressed() {
 		if (aSurfaceView.board == aSurfaceView.gameBoard) {
+			aSurfaceView.board.isPaused = false;
 			aSurfaceView.setBoard(aSurfaceView.startBoard);
 			aSurfaceView.startBoard.reselect();
 		} else {

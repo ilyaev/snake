@@ -19,6 +19,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	
 	Context sContext = null;
 	public Typeface mFace;
+	public volatile Canvas canvas = null;
 	
 	private final static int 	MAX_FPS = 60;
     private final static int	MAX_FRAME_SKIPS = 5;
@@ -29,9 +30,12 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 		mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Biotype.ttf");
 		sContext = context;
 		sHolder = getHolder();
-		loadState();
+		
 		gameBoard = new GameSnakeBoard(this);
 		startBoard = new StartSnakeBoard(this);
+		
+		loadState();
+		
 		
 		setBoard(startBoard);
 	}
@@ -45,6 +49,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	public void loadState() {
 		SharedPreferences prefs = sContext.getSharedPreferences("pbartz.games.snake", 0);
 		GameScore.initialize(prefs);
+		setControlType(GameScore.getControlType());
 	}
 	
 	public void setBoard(SnakeBoard nextBoard) {
@@ -66,13 +71,10 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 			int sleepTime;		// ms to sleep (<0 if we're behind)
 			int framesSkipped;	// number of frames being skipped 
 
-			sleepTime = 0;
-			
-			Canvas canvas = null;			
-			
+			sleepTime = 0;			
 			
 			try {
-				canvas = sHolder.lockCanvas();
+				canvas  = sHolder.lockCanvas();
 				
 				beginTime = System.currentTimeMillis();
 				framesSkipped = 0;
@@ -112,7 +114,7 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 	
 	public void pause() {
 		isRunning = false;
-
+		board.isPaused = true;	
 		while (true) {
 			try {
 				sThread.join();
@@ -129,6 +131,28 @@ public class SnakeBoxSurface extends SurfaceView implements Runnable {
 		isRunning = true;
 		sThread = new Thread(this);
 		sThread.start();
+	}
+
+	public void rotateControlType() {
+		int cType = gameBoard.controlType;
+		cType += 1;
+		if (cType > 3) {
+			cType = 1;
+		}
+		setControlType(cType);		
+		GameScore.updateControlType(cType);
+	}
+
+	public void setControlType(int cType) {
+		gameBoard.controlType = cType;
+		String txt = "D-PAD";
+		if (cType == 2) {
+			txt = "RELATIVE";
+		}
+		if (cType == 3) {
+			txt = "SWIPE";
+		}		
+		startBoard.btnControl.setText("CONTROL : " + txt);		
 	}
 
 }
