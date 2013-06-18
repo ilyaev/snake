@@ -278,10 +278,14 @@ public class Snake {
 				break;		
 		}
 		
-		if (body.items.get(1).cellX == tX && body.items.get(1).cellY == tY) {
+		if (tX < 1 || tY < 1 || tX > board.cnHorizontal || tY > board.cnVertical) {
 			// skip
 		} else {
-			currentCmd = cmd;
+			if ((board.oMap[tX][tY]) || (body.items.get(1).cellX == tX && body.items.get(1).cellY == tY)) {
+				// skip
+			} else {
+				currentCmd = cmd;
+			}
 		}
 	}
 

@@ -12,6 +12,7 @@ public class Particle {
 	public boolean isActive = true;
 	public int stepsXY;
 	public Paint paint;
+	float particleSize = 0;
 	
 	public Particle (float cX, float cY) {
 		x = cX;
@@ -43,7 +44,10 @@ public class Particle {
 	}
 	
 	public void draw(Canvas canvas) {
-		canvas.drawCircle(x, y, 3, paint);
+		if (particleSize == 0) {
+			particleSize = (float)(canvas.getHeight() / 266.666666);
+		}
+		canvas.drawCircle(x, y, particleSize, paint);
 	}
 	
 }

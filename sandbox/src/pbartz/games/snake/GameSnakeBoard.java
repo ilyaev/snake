@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.net.Uri;
-import android.util.Log;
 import android.view.MotionEvent;
 
 public class GameSnakeBoard extends SnakeBoard {
@@ -480,15 +479,17 @@ public class GameSnakeBoard extends SnakeBoard {
 		gameOver = 0;
 		
 		cnHorizontal = MIN_CELLS_NUMBER;
+		cellSizePx = sWidth / cnHorizontal;
+		cnVertical = 24;
 		
-		if (sHeight > sWidth) {
-			cellSizePx = sWidth / cnHorizontal;
-			cnVertical = (int) ((sHeight - cpHeight - spHeight) / cellSizePx);
-		} else {
-			cnVertical = MIN_CELLS_NUMBER;
-			cellSizePx = sHeight / cnVertical;
-			cnHorizontal = (int) ((sWidth - cpHeight - spHeight) / cellSizePx);
-		}
+//		if (sHeight > sWidth) {
+//			cellSizePx = sWidth / cnHorizontal;
+//			cnVertical = (int) ((sHeight - cpHeight - spHeight) / cellSizePx);
+//		} else {
+//			cnVertical = MIN_CELLS_NUMBER;
+//			cellSizePx = sHeight / cnVertical;
+//			cnHorizontal = (int) ((sWidth - cpHeight - spHeight) / cellSizePx);
+//		}
 		
 		cpHeight = (int)(sHeight - (cnVertical*cellSizePx));
 		
@@ -551,7 +552,7 @@ public class GameSnakeBoard extends SnakeBoard {
 				
 		}
 		
-		fieldRect = new Rect(0, 0, sWidth - 1, sHeight - cpHeight);
+		fieldRect = new Rect(0, 0, sWidth - 1, sHeight - cpHeight - ((sHeight - cpHeight) / 100 * 15));
 		controlRect = new Rect(0, sHeight - cpHeight, sWidth - 1, sHeight - 1);
 		rebuildObstMap();	
 	}	
@@ -813,8 +814,6 @@ public class GameSnakeBoard extends SnakeBoard {
 				if (event.getAction() == MotionEvent.ACTION_MOVE && touchX != -1) {
 					float deltaX = event.getX() - touchX;
 					float deltaY = event.getY() - touchY;
-					
-					Log.v("SNAKE", "deltaxy: " + Float.toString(deltaX) + " ; " + Float.toString(deltaY));
 					
 					if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
 						if (deltaX > 0) {

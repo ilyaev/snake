@@ -42,7 +42,7 @@ public class GameScore {
 	
 	public static int getControlType() {
 		String key = "controlType";
-		return prefs.getInt(key, 1);
+		return prefs.getInt(key, 3);
 	}
 	
 	public static void clearCache() {

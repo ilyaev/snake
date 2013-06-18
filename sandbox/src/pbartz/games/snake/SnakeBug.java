@@ -54,6 +54,7 @@ public class SnakeBug {
 	
 	int transparency = 0;
 	Paint whitePaint, redPaint;
+	float wCircleSize = 0;
 	
 	public SnakeBug(int cX, int cY) {
 		cellX = cX;
@@ -175,6 +176,10 @@ public class SnakeBug {
 		
 		Paint paint;
 		
+		if (wCircleSize == 0) {
+			wCircleSize = cellSizePx / 12;
+		}
+		
 		if (transparency < 255) {
 			paint = new Paint(tPaint);
 			paint.setAlpha(transparency);
@@ -221,9 +226,9 @@ public class SnakeBug {
 				canvas.drawCircle(cellCenterX, cellCenterY, cellSizePx / 2, redPaint);
 				canvas.drawRect(leftX, topY + cellSizePx / 2, leftX + cellSizePx, topY + cellSizePx, blackPaint);
 				canvas.drawRect(cellCenterX - cellSizePx / 4, topY + cellSizePx / 2, cellCenterX + cellSizePx / 4, topY + cellSizePx, whitePaint);
-				canvas.drawCircle(leftX + (float)(cellSizePx / 4.5), topY + cellSizePx / 4, 2, whitePaint);
-				canvas.drawCircle(leftX + (float)((cellSizePx / 4.5)*2.8), topY + (float)(cellSizePx / 5), 2, whitePaint);
-				canvas.drawCircle(leftX + (float)((cellSizePx / 4.5)*3.7), topY + (float)(cellSizePx / 3.5), 2, whitePaint);
+				canvas.drawCircle(leftX + (float)(cellSizePx / 4.5), topY + cellSizePx / 4, wCircleSize, whitePaint);
+				canvas.drawCircle(leftX + (float)((cellSizePx / 4.5)*2.8), topY + (float)(cellSizePx / 5), wCircleSize, whitePaint);
+				canvas.drawCircle(leftX + (float)((cellSizePx / 4.5)*3.7), topY + (float)(cellSizePx / 3.5), wCircleSize, whitePaint);
 				break;
 			default:
 				break;

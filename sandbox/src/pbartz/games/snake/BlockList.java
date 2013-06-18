@@ -35,6 +35,9 @@ public class BlockList {
 	
 	public void addBlock(int x, int y, int bType) {
 		Block block = new Block(x, y, bType);
+		if (board.sHeight > 800) {
+			block.maxIterations = 15;
+		}
 		items.add(block);
 		
 		if (block.type == Block.BLOCK_KEYHOLE) {
