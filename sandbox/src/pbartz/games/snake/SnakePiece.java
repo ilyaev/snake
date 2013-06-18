@@ -37,7 +37,7 @@ public class SnakePiece {
 		x = board.getCellCenterX(cellX);
 		y = board.getCellCenterY(cellY);
 		
-		if (cBoard.sHeight > 800) {
+		if (cBoard.sHeight > 1280) {
 			maxIterations = 8; //(int) (board.defaultSpeed / 16.666666666666666);
 		} else {
 			maxIterations = 12;
