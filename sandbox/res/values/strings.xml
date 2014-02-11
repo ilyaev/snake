@@ -4,5 +4,11 @@
     <string name="app_name">Snake!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-
+    <string name="app_id">562694215486</string>
+    <string name="gamehelper_app_misconfigured">gamehelper_app_misconfigured</string>
+    <string name="gamehelper_sign_in_failed">gamehelper_sign_in_failed</string>
+    <string name="gamehelper_license_failed">gamehelper_license_failed</string>
+    <string name="gamehelper_unknown_error">gamehelper_unknown_error</string>
+    <string name="leaderboard_id">CgkIvq7BmbAQEAIQAw</string>
+    
 </resources>

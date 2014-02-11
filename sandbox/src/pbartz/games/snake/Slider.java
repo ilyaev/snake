@@ -9,7 +9,7 @@ import android.graphics.Typeface;
 public class Slider {
 
 	String menuItems[] = {"Classic", "Escape", "Survival"};
-	String menuDescr[] = {"Grow longest tail you \ncan. No rivals.", "Entrap rivals and \ncollect keys to unlock \nnext level.", "Last snake standing."};
+	String menuDescr[] = {"Grow longest tail you \ncan. No rivals.", "Entrap rivals and \ncollect keys to unlock \nnext level.", "Last snake standing.","Compete with you friend\nor random person."};
 	Rect rectItems[];
 	Rect originalRects[];
 	int textOX[];

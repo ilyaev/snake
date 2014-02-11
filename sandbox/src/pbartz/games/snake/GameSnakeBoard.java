@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class GameSnakeBoard extends SnakeBoard {
@@ -59,6 +60,12 @@ public class GameSnakeBoard extends SnakeBoard {
 
 	private Button btnResume;
 
+	private Button btnUpload;
+
+	public int lastGivenCommand = -1;
+
+	public boolean isHost = false;
+
 	public GameSnakeBoard(SnakeBoxSurface tSurface) {
 	
 		surface = tSurface;
@@ -80,6 +87,7 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnNext = new Button("NEXT", tSurface.mFace);
 		
 		btnRate = new Button("RATE APP", tSurface.mFace);
+		btnUpload = new Button("PUBLISH SCORE", tSurface.mFace);
 		
 		btnResume = new Button("RESUME", tSurface.mFace);
 		
@@ -190,7 +198,6 @@ public class GameSnakeBoard extends SnakeBoard {
 				Rect hsBounds = new Rect();
 				funnyTextPaint.getTextBounds(funnyText, 0, funnyText.length(), hsBounds);
 				canvas.drawText(funnyText, panel.left + (panel.width() - hsBounds.width()) / 2, (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint);
-				//drawMultilineText(funnyText, (int)(panel.left + 2), (int)(panel.top + 30 + scorePaint.getTextSize() + 50 + 5), funnyTextPaint, canvas);
 			}		
 			
 			if (System.currentTimeMillis() - gameOverCountdown > 2000) {
@@ -200,6 +207,10 @@ public class GameSnakeBoard extends SnakeBoard {
 					btnReplay.draw(canvas);
 				}
 				btnMenu.draw(canvas);
+				BaseGameActivity activity = ((BaseGameActivity) this.surface.sContext);
+				if (!activity.isSignedIn()) {
+					btnUpload.draw(canvas);
+				}
 			}
 			
 			if (System.currentTimeMillis() - gameOverCountdown > 5000) {
@@ -217,15 +228,15 @@ public class GameSnakeBoard extends SnakeBoard {
 		return r;
 	}
 
-	private void drawScorePanel() {
-		String txt = "Score: " + Integer.toString(getScore()) + "     Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1);
-		
-		if (gameMode == GAMEMODE_BATTLE) {
-			txt += "  Level: " + Integer.toString(level) + "/" + Integer.toString(SnakeLevels.levels.length);
-		}
-		
-		canvas.drawText(txt, 0, spHeight, textPaint);
-	}
+//	private void drawScorePanel() {
+//		String txt = "Score: " + Integer.toString(getScore()) + "     Tail: " + Integer.toString(snakes.get(0).body.items.size() - 1);
+//		
+//		if (gameMode == GAMEMODE_BATTLE) {
+//			txt += "  Level: " + Integer.toString(level) + "/" + Integer.toString(SnakeLevels.levels.length);
+//		}
+//		
+//		canvas.drawText(txt, 0, spHeight, textPaint);
+//	}
 	
 	private void drawControlPanel() {		
 		if (canvas == null || btnLeft == null || whiteFramePaint == null) {
@@ -307,6 +318,11 @@ public class GameSnakeBoard extends SnakeBoard {
 			
 			if (timeDiff >= defaultSpeed) {
 				
+				if (gameMode == GAMEMODE_NETPLAY ) {
+					SnakeBox activity = ((SnakeBox) this.surface.sContext);
+					activity.pushCommand(GameSession.CMD_MOVE, snakes.get(0).currentCmd);
+				}
+				
 				for(int i = 0 ; i < snakes.size() ; i++) {
 					snakes.get(i).calculate();
 					rebuildObstMap();
@@ -320,7 +336,7 @@ public class GameSnakeBoard extends SnakeBoard {
 			}
 			
 			for(int i = 0 ; i < snakes.size() ; i++) {
-				snakes.get(i).body.calculate();
+				snakes.get(i).body.calculate();				
 			}
 			
 			bugs.calculate();
@@ -413,6 +429,11 @@ public class GameSnakeBoard extends SnakeBoard {
 			snakes.get(0).live = 0;
 			gameOverCountdown = System.currentTimeMillis();
 			gameOver = 1;
+			
+			SnakeBox activity = ((SnakeBox) this.surface.sContext);
+			activity.uploadScore();
+			
+			
 			for(int i = 0 ; i < snakes.get(0).body.items.size() ; i++) {
 				snakes.get(0).body.items.get(i).iteration = 0;
 				snakes.get(0).body.items.get(i).maxIterations = 60;
@@ -460,6 +481,10 @@ public class GameSnakeBoard extends SnakeBoard {
 		btnRate.setPosition((int)(sWidth / 4.8), sHeight - (sHeight / 8)*3);
 		btnRate.setSize((int)(sWidth / 1.6 - 5), sHeight / 8);
 		btnRate.setFontSize(sHeight / 20);
+		
+		btnUpload.setPosition((int)(sWidth / 13), sHeight - (int)(sHeight / 5.5)*3);
+		btnUpload.setSize((int)(sWidth / 1.1 - 5), sHeight / 8);
+		btnUpload.setFontSize(sHeight / 20);
 		
 		btnResume.setPosition((int)(sWidth / 4.8), sHeight - (sHeight / 2));
 		btnResume.setSize((int)(sWidth / 1.6 - 5), sHeight / 8);
@@ -547,6 +572,8 @@ public class GameSnakeBoard extends SnakeBoard {
 			case GAMEMODE_SURVIVAL:
 				startGameSurvival();
 				break;
+			case GAMEMODE_NETPLAY:
+				startGameNetPlay();
 			default:
 				break;
 				
@@ -667,7 +694,11 @@ public class GameSnakeBoard extends SnakeBoard {
 		
 		rebuildObstMap();
 		
-		
+			if (gameMode == GAMEMODE_NETPLAY && !this.isHost) {
+				String tmp = sSnakes[0];
+				sSnakes[0] = sSnakes[1];
+				sSnakes[1] = tmp;
+			}
 		
 			for(int i =  0 ; i < sSnakes.length ; i++) {
 				String[] xy = sSnakes[i].split(",");
@@ -676,17 +707,32 @@ public class GameSnakeBoard extends SnakeBoard {
 				
 				Snake tSnake = new Snake(Integer.parseInt(xy[0]), Integer.parseInt(xy[1]), this);
 				tSnake.race = curRace;
-				tSnake.live = 1;			
+				tSnake.live = 1;	
+				
+				if (curRace == Snake.RACE_ENEMY1 && gameMode == GAMEMODE_NETPLAY) {
+					if (this.isHost) {
+						tSnake.currentCmd = Snake.CMD_DOWN;
+					} else {
+						tSnake.currentCmd = Snake.CMD_UP;
+					}
+				}
 				
 				
 				tSnake.body.grow(SnakeBug.BUG_TRIPPLE);
 				if (curRace == Snake.RACE_PLAYER) {
 					tSnake.currentCmd = Snake.CMD_UP;
+					if (gameMode == GAMEMODE_NETPLAY && !this.isHost) {
+						tSnake.currentCmd = Snake.CMD_DOWN;
+					}
 				}
 				
-				if (gameMode == GAMEMODE_BATTLE || curRace == Snake.RACE_PLAYER) {
-					bugs.spawnBug(curRace);
-					snakes.add(tSnake);
+				
+				
+				if (gameMode == GAMEMODE_BATTLE || gameMode == GAMEMODE_NETPLAY || curRace == Snake.RACE_PLAYER) {
+					if (gameMode != GAMEMODE_NETPLAY || curRace < Snake.RACE_ENEMY2) {
+						bugs.spawnBug(curRace);
+						snakes.add(tSnake);
+					}
 				}
 				
 				if (gameMode == GAMEMODE_SURVIVAL && curRace == 2) {
@@ -710,6 +756,10 @@ public class GameSnakeBoard extends SnakeBoard {
 		}
 	}
 	
+	private void startGameNetPlay() {
+		startGameBattle();
+	}
+	
 	private void startGameSurvival() {
 		startGameBattle();
 		lastSnakeSpawn = System.currentTimeMillis();
@@ -719,9 +769,25 @@ public class GameSnakeBoard extends SnakeBoard {
 		if (gameOver == 1 && event.getAction() == MotionEvent.ACTION_UP && System.currentTimeMillis() - gameOverCountdown > 2000) {
 			if (btnReplay.rect.contains((int)event.getX(), (int)event.getY())) {
 				state = SnakeBoard.NOT_INITED;
+				if (this.gameMode == GAMEMODE_NETPLAY) {
+					SnakeBox activity = ((SnakeBox) this.surface.sContext);
+					activity.nextNetPlay();
+				}
 			} else if (btnMenu.rect.contains((int)event.getX(), (int)event.getY())) {
 				surface.setBoard(surface.startBoard);
 				surface.startBoard.reselect();
+			} else if (btnUpload.rect.contains((int)event.getX(), (int)event.getY())) {
+				
+				// upload score
+				
+				BaseGameActivity activity = ((BaseGameActivity) this.surface.sContext);
+				
+				if (!activity.isSignedIn()) {
+					activity.beginUserInitiatedSignIn();
+				}
+				
+				
+				
 			} else if (btnRate.rect.contains((int)event.getX(), (int)event.getY())) {
 				Uri uri = Uri.parse("market://details?id=" + surface.sContext.getPackageName());
 			    Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
@@ -740,6 +806,8 @@ public class GameSnakeBoard extends SnakeBoard {
 			btnLeftState = -1;
 			btnLeftStateR = -1;
 			
+			boolean commandGiven = false;
+			
 			if (controlType == CONTROL_TYPE_DPAD) {
 				if (btnLeft.contains((int)event.getX(), (int)event.getY()) && snakes.get(0).currentCmd != Snake.CMD_RIGHT) {
 					btnLeftState = event.getAction();
@@ -754,6 +822,7 @@ public class GameSnakeBoard extends SnakeBoard {
 					btnDownState = event.getAction();
 					snakes.get(0).setCommand(Snake.CMD_DOWN);
 				}
+				commandGiven = true;
 			}
 			
 			if (controlType == CONTROL_TYPE_RELATIVE && event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -795,10 +864,11 @@ public class GameSnakeBoard extends SnakeBoard {
 							break;
 					}
 				}
+				commandGiven = true;
 			}
 			
 			if (controlType == CONTROL_TYPE_SWIPE) {
-				
+				commandGiven = true;
 				if (controlRect.contains((int)event.getX(), (int)event.getY())) {
 					if (event.getAction() == MotionEvent.ACTION_DOWN) {
 						touchX = event.getX();
@@ -840,6 +910,14 @@ public class GameSnakeBoard extends SnakeBoard {
 				if (event.getAction() == MotionEvent.ACTION_DOWN) {
 					isPaused = !isPaused;
 				}
+			}
+			
+			
+			if (commandGiven && snakes.get(0).currentCmd != lastGivenCommand ) {
+				lastGivenCommand = snakes.get(0).currentCmd;
+				Log.v("SnakeSurvival","Player given command: " + Integer.toString(snakes.get(0).currentCmd));
+//				SnakeBox activity = ((SnakeBox) this.surface.sContext);
+//				activity.pushCommand(GameSession.CMD_MOVE, lastGivenCommand);
 			}
 		}
 	}

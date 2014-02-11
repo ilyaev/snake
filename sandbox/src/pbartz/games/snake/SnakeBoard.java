@@ -28,6 +28,7 @@ public class SnakeBoard {
 	final static int GAMEMODE_SOLO = 1;
 	final static int GAMEMODE_BATTLE = 2;
 	final static int GAMEMODE_SURVIVAL = 3;
+	final static int GAMEMODE_NETPLAY = 4;
 	
 	BlockList walls;
 
@@ -46,6 +47,8 @@ public class SnakeBoard {
 	final static int NOT_INITED	= 0;
 	final static int INITED 	= 1;
 	final static int IS_MOVING 	= 2;
+
+	
 	
 	int defaultSpeed = 200;
 	
@@ -85,6 +88,7 @@ public class SnakeBoard {
 	public int gameLevel = 0;
 
 	public Button btnControl;
+	public Button btnBoard;
 	
 	public void draw(Canvas tCanvas) {
 		canvas = tCanvas;

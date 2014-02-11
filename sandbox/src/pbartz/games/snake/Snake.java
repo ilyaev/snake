@@ -170,7 +170,7 @@ public class Snake {
 
 	public void calculate() {
 		if (active == 1 && live == 1) {
-			if (race != RACE_PLAYER) {
+			if (race != RACE_PLAYER && board.gameMode != GameSnakeBoard.GAMEMODE_NETPLAY) {
 				if (path.size() > 0) {
 					
 					Node next = path.get(0);
@@ -308,7 +308,7 @@ public class Snake {
 			body.items.get(i).doShrink = 1;
 		}
 		
-		if (race == RACE_PLAYER) {
+		if (race == RACE_PLAYER && board.gameOver != 1) {
 			board.gameOverCountdown = System.currentTimeMillis();
 			//board.funnyText = "\"" + board.quote.nextQuote() + "\"\n\n" + board.quote.nextAuthor();
 			board.gameOver = 1;
@@ -318,6 +318,13 @@ public class Snake {
 				board.funnyText = "High Score!";
 			} else {
 				board.funnyText = "";
+			}
+			
+			SnakeBox activity = ((SnakeBox) this.board.surface.sContext);			
+			activity.uploadScore();
+			if (board.gameMode == GameSnakeBoard.GAMEMODE_NETPLAY) {
+				board.funnyText = "Loose!";
+				activity.pushCommand(GameSession.CMD_FINISH, 0);
 			}
 		}
 		

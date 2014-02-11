@@ -18,6 +18,7 @@ public class StartSnakeBoard extends SnakeBoard {
 	final static int ACTION_SOLO = 0;
 	final static int ACTION_BATTLE = 1;
 	final static int ACTION_SURVIVAL = 2;
+	final static int ACTION_NETPLAY = 3;
 	
 	long lastShowTimeStamp = 0;
 
@@ -54,6 +55,7 @@ public class StartSnakeBoard extends SnakeBoard {
 		
 		lastShowTimeStamp = System.currentTimeMillis();
 		btnControl = new Button("CONTROL : D-PAD", tSurface.mFace);
+		btnBoard = new Button("LEADERBOARD", tSurface.mFace);
 	}
 	
 	public void refresh() {
@@ -89,7 +91,10 @@ public class StartSnakeBoard extends SnakeBoard {
 		slider.render(canvas);
 		
 		levelSlider.draw(canvas);
-		btnControl.draw(canvas);		
+		btnControl.draw(canvas);
+		if (!levelSlider.active) {
+			btnBoard.draw(canvas);
+		}
 		
 	}
 	
@@ -221,6 +226,10 @@ public class StartSnakeBoard extends SnakeBoard {
 		btnControl.setPosition(1, sHeight - (int)(sHeight / 7.61));
 		btnControl.setSize(sWidth - 5, sHeight / 10);
 		btnControl.setFontSize(sHeight / 25);
+		
+		btnBoard.setPosition(1, sHeight / 6);
+		btnBoard.setSize(sWidth - 5, sHeight / 10);
+		btnBoard.setFontSize(sHeight / 25);
 		
 		addSnakes();
 		rebuildObstMap();
@@ -355,6 +364,14 @@ public class StartSnakeBoard extends SnakeBoard {
 			return;
 		}
 		
+		if (btnBoard.rect.contains((int)event.getX(), (int)event.getY()) && !levelSlider.active) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				SnakeBox activity = ((SnakeBox) surface.sContext);
+				activity.showLeaderBoard();
+			}
+			return;
+		}
+		
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			lastTX = event.getX();
 			if (btnControl.rect.contains((int)event.getX(), (int)event.getY())) {
@@ -392,6 +409,9 @@ public class StartSnakeBoard extends SnakeBoard {
 						case StartSnakeBoard.ACTION_SURVIVAL:
 							gameMode = SnakeBoard.GAMEMODE_SURVIVAL;
 							break;	
+						case StartSnakeBoard.ACTION_NETPLAY:
+							gameMode = SnakeBoard.GAMEMODE_NETPLAY;
+							break;
 					}
 					levelSlider.active = true;
 					levelSlider.selectLevel(GameScore.getSelectedLevel(gameMode));					
@@ -400,10 +420,19 @@ public class StartSnakeBoard extends SnakeBoard {
 			}
 			
 			if (mapAction >= 0) {
-				surface.gameBoard.gameLevel = mapAction;
-				surface.gameBoard.gameMode = gameMode;
-				surface.gameBoard.state = SnakeBoard.NOT_INITED;
-				surface.setBoard(surface.gameBoard);				
+				if (gameMode == SnakeBoard.GAMEMODE_NETPLAY) {
+					// init netplay
+					SnakeBox activity = ((SnakeBox) surface.sContext);
+					surface.gameBoard.gameLevel = mapAction;
+					surface.gameBoard.gameMode = gameMode;
+					surface.gameBoard.state = SnakeBoard.NOT_INITED;
+					activity.startQuickGame();					
+				} else {
+					surface.gameBoard.gameLevel = mapAction;
+					surface.gameBoard.gameMode = gameMode;
+					surface.gameBoard.state = SnakeBoard.NOT_INITED;
+					surface.setBoard(surface.gameBoard);
+				}
 			}
 		}
 	}

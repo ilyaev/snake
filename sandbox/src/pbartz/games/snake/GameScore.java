@@ -6,6 +6,7 @@ public class GameScore {
 	
 	public static SharedPreferences prefs;
 	public static int lastUnlockedLevel = 1;
+	public static int maxLevels = 16;
 	
 	public static void initialize(SharedPreferences tPrefs) {
 		prefs = tPrefs;
@@ -30,6 +31,15 @@ public class GameScore {
 	public static int getScore(int mode, int level) {
 		String key = "score_" + Integer.toString(mode) + "_" + Integer.toString(level);
 		return prefs.getInt(key, 0);
+	}
+	
+	public static int getScore(int mode) {
+		int total = 0;
+		for (int i = 1 ; i <= maxLevels; i++) {
+			String key = "score_" + Integer.toString(mode) + "_" + Integer.toString(i);
+			total += prefs.getInt(key, 0);
+		}
+		return total;
 	}
 	
 	public static boolean updateControlType(int mode) {
